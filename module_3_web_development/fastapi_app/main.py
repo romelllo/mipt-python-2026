@@ -114,10 +114,16 @@ async def delete_task(task_id: int):
 @app.patch("/tasks/{task_id}/complete")
 async def complete_task(task_id: int):
     """Отметить задачу как выполненную"""
-    for task in tasks_db:
+    for i, task in enumerate(tasks_db):
         if task.id == task_id:
-            task.completed = True
-            return task
+            updated_task = Task(
+                id=task.id,
+                title=task.title,
+                description=task.description,
+                completed=True
+            )
+            tasks_db[i] = updated_task
+            return updated_task
     raise HTTPException(status_code=404, detail="Задача не найдена")
 
 
