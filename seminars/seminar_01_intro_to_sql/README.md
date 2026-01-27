@@ -1,7 +1,7 @@
-# Семинар 1: Введение в SQL — основы работы с данными
+# Семинар 1: Введение в базы данных. Знакомство с SQL
 
-**Модуль:** 2 — Объектно-ориентированное программирование и базы данных в Python  
-**Дата:** ДД.ММ.ГГГГ  
+**Модуль:** 2 — Объектно-ориентированное программирование и основы работы с базами данных в Python
+**Дата:** 02.02.2026
 **Презентация:** [ссылка на презентацию]
 
 ---
@@ -119,7 +119,7 @@ VALUES ('Иван', 'Петров', 'petrov@mail.ru', 20);
 
 -- Вставка нескольких записей
 INSERT INTO students (first_name, last_name, email, age)
-VALUES 
+VALUES
     ('Мария', 'Сидорова', 'sidorova@mail.ru', 19),
     ('Алексей', 'Козлов', 'kozlov@mail.ru', 21);
 ```
@@ -144,13 +144,13 @@ SELECT * FROM students WHERE age >= 18 AND is_active = 1;
 
 ```sql
 -- Обновить одно поле по условию
-UPDATE students 
-SET email = 'new_email@mail.ru' 
+UPDATE students
+SET email = 'new_email@mail.ru'
 WHERE student_id = 1;
 
 -- Обновить несколько полей
-UPDATE students 
-SET age = 21, is_active = 0 
+UPDATE students
+SET age = 21, is_active = 0
 WHERE last_name = 'Петров';
 
 -- ⚠️ ВНИМАНИЕ: без WHERE обновятся ВСЕ записи!

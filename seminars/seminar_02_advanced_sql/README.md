@@ -1,7 +1,7 @@
-# Семинар 2: Сложные SQL-запросы
+# Семинар 2: Проектирование базы данных
 
-**Модуль:** 2 — Объектно-ориентированное программирование и базы данных в Python  
-**Дата:** ДД.ММ.ГГГГ  
+**Модуль:** 2 — Объектно-ориентированное программирование и основы работы с базами данных в Python
+**Дата:** 09.02.2026
 **Презентация:** [ссылка на презентацию]
 
 ---
@@ -42,19 +42,19 @@
 
 ```sql
 -- AND: все условия должны быть истинны
-SELECT * FROM students 
+SELECT * FROM students
 WHERE enrollment_year = 2021 AND gpa >= 4.0;
 
 -- OR: хотя бы одно условие истинно
-SELECT * FROM students 
+SELECT * FROM students
 WHERE enrollment_year = 2020 OR enrollment_year = 2022;
 
 -- NOT: отрицание условия
-SELECT * FROM students 
+SELECT * FROM students
 WHERE NOT is_active = 1;
 
 -- Комбинация (скобки важны для приоритета!)
-SELECT * FROM students 
+SELECT * FROM students
 WHERE (enrollment_year = 2021 OR enrollment_year = 2022) AND gpa > 4.0;
 ```
 
@@ -78,24 +78,24 @@ SELECT * FROM students WHERE first_name LIKE '_____';
 #### IN — проверка вхождения в список
 ```sql
 -- Студенты 2020, 2021 или 2022 года
-SELECT * FROM students 
+SELECT * FROM students
 WHERE enrollment_year IN (2020, 2021, 2022);
 
 -- Эквивалентно:
-SELECT * FROM students 
-WHERE enrollment_year = 2020 
-   OR enrollment_year = 2021 
+SELECT * FROM students
+WHERE enrollment_year = 2020
+   OR enrollment_year = 2021
    OR enrollment_year = 2022;
 ```
 
 #### BETWEEN — диапазон значений
 ```sql
 -- GPA от 3.5 до 4.5 включительно
-SELECT * FROM students 
+SELECT * FROM students
 WHERE gpa BETWEEN 3.5 AND 4.5;
 
 -- Эквивалентно:
-SELECT * FROM students 
+SELECT * FROM students
 WHERE gpa >= 3.5 AND gpa <= 4.5;
 ```
 
@@ -110,21 +110,21 @@ SELECT * FROM students ORDER BY gpa;
 SELECT * FROM students ORDER BY gpa DESC;
 
 -- По нескольким полям
-SELECT * FROM students 
+SELECT * FROM students
 ORDER BY enrollment_year ASC, gpa DESC;
 ```
 
 #### LIMIT — ограничение количества строк
 ```sql
 -- Топ-5 студентов по GPA
-SELECT first_name, last_name, gpa 
-FROM students 
-ORDER BY gpa DESC 
+SELECT first_name, last_name, gpa
+FROM students
+ORDER BY gpa DESC
 LIMIT 5;
 
 -- Пагинация: пропустить 5, взять следующие 5
-SELECT * FROM students 
-ORDER BY student_id 
+SELECT * FROM students
+ORDER BY student_id
 LIMIT 5 OFFSET 5;
 ```
 
@@ -190,12 +190,12 @@ SELECT COUNT(*) AS total FROM students;
 SELECT ROUND(AVG(gpa), 2) AS avg_gpa FROM students;
 
 -- Статистика по GPA
-SELECT 
+SELECT
     COUNT(*) AS total,
     ROUND(AVG(gpa), 2) AS avg_gpa,
     MIN(gpa) AS min_gpa,
     MAX(gpa) AS max_gpa
-FROM students 
+FROM students
 WHERE is_active = 1;
 ```
 
