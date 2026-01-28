@@ -10,7 +10,7 @@ authors = [{ name = "MIPT Python Course" }]
 dependencies = [
     # Модуль 2: ООП и базы данных
     "sqlalchemy>=2.0.0",
-    
+
     # Модуль 3: Веб-разработка
     "django>=5.0.0",
     "djangorestframework>=3.14.0",
@@ -18,7 +18,7 @@ dependencies = [
     "uvicorn[standard]>=0.27.0",
     "pydantic>=2.6.0",
     "httpx>=0.27.0",
-    
+
     # Модуль 4: Анализ данных
     "numpy>=1.26.0",
     "pandas>=2.2.0",
@@ -26,7 +26,7 @@ dependencies = [
     "seaborn>=0.13.0",
     "requests>=2.31.0",
     "beautifulsoup4>=4.12.0",
-    
+
     # Jupyter
     "jupyterlab>=4.1.0",
 ]
@@ -36,7 +36,8 @@ dev = [
     "pytest>=8.0.0",
     "pytest-cov>=4.1.0",
     "pytest-asyncio>=0.23.0",
-    "mypy>=1.8.0",
+    "ty>=0.0.14",
+    "ruff>=0.1.0",
 ]
 
 [build-system]
@@ -88,11 +89,6 @@ asyncio_mode = "auto"
 addopts = "-v --tb=short"
 
 # =====================
-# MyPy Configuration
+# ty Configuration
 # =====================
-[tool.mypy]
-python_version = "3.10"
-warn_return_any = true
-warn_unused_ignores = true
-disallow_untyped_defs = true
-ignore_missing_imports = true
+[tool.ty]

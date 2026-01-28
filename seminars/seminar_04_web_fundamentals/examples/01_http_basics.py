@@ -11,9 +11,10 @@
 бесплатный сервис для тестирования HTTP запросов.
 """
 
+from urllib.parse import parse_qs, urlencode, urljoin, urlparse
+
 import requests
 from requests.exceptions import ConnectionError, HTTPError, RequestException, Timeout
-from urllib.parse import parse_qs, urlencode, urljoin, urlparse
 
 
 def demonstrate_url_parsing() -> None:

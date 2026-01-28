@@ -1,7 +1,7 @@
-# Семинар 3: Паттерны проектирования ООП в Python
+# Семинар 3: Паттерны ООП на Python для разработки приложения
 
-**Модуль:** 2 — Объектно-ориентированное программирование и базы данных в Python  
-**Дата:** ДД.ММ.ГГГГ  
+**Модуль:** 2 — Объектно-ориентированное программирование и основы работы с базами данных в Python
+**Дата:** 16.02.2026
 **Презентация:** [ссылка на презентацию]
 
 ---
@@ -43,7 +43,7 @@ class User:
     def __init__(self, name: str, email: str):
         self.name = name
         self.email = email
-    
+
     def save_to_db(self): ...      # Работа с БД
     def send_email(self): ...       # Отправка email
     def generate_report(self): ...  # Генерация отчёта
@@ -80,7 +80,7 @@ class NoDiscount(Discount):
 class PercentDiscount(Discount):
     def __init__(self, percent: float):
         self.percent = percent
-    
+
     def calculate(self, price: float) -> float:
         return price * (1 - self.percent / 100)
 
@@ -88,7 +88,7 @@ class PercentDiscount(Discount):
 class FixedDiscount(Discount):
     def __init__(self, amount: float):
         self.amount = amount
-    
+
     def calculate(self, price: float) -> float:
         return max(0, price - self.amount)
 ```
@@ -192,13 +192,13 @@ class UserService:
 ```python
 class DatabaseConnection:
     _instance = None
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialized = False
         return cls._instance
-    
+
     def __init__(self):
         if self._initialized:
             return
@@ -256,19 +256,19 @@ class Pizza:
 class PizzaBuilder:
     def __init__(self):
         self._pizza = Pizza()
-    
+
     def set_size(self, size: str) -> "PizzaBuilder":
         self._pizza.size = size
         return self
-    
+
     def add_cheese(self) -> "PizzaBuilder":
         self._pizza.cheese = True
         return self
-    
+
     def add_pepperoni(self) -> "PizzaBuilder":
         self._pizza.pepperoni = True
         return self
-    
+
     def build(self) -> Pizza:
         return self._pizza
 
@@ -306,7 +306,7 @@ class PaymentProcessor(ABC):
 class PaymentAdapter(PaymentProcessor):
     def __init__(self, old_system: OldPaymentSystem):
         self.old_system = old_system
-    
+
     def pay(self, amount: float) -> str:
         kopecks = int(amount * 100)
         return self.old_system.make_payment(kopecks)
@@ -321,7 +321,7 @@ class Coffee(ABC):
     @abstractmethod
     def cost(self) -> float:
         pass
-    
+
     @abstractmethod
     def description(self) -> str:
         pass
@@ -329,7 +329,7 @@ class Coffee(ABC):
 class SimpleCoffee(Coffee):
     def cost(self) -> float:
         return 100.0
-    
+
     def description(self) -> str:
         return "Coffee"
 
@@ -340,7 +340,7 @@ class CoffeeDecorator(Coffee):
 class MilkDecorator(CoffeeDecorator):
     def cost(self) -> float:
         return self._coffee.cost() + 20.0
-    
+
     def description(self) -> str:
         return f"{self._coffee.description()} + Milk"
 
@@ -371,7 +371,7 @@ class ComputerFacade:
         self.cpu = CPU()
         self.memory = Memory()
         self.hdd = HardDrive()
-    
+
     def start(self):
         self.cpu.freeze()
         self.memory.load(self.hdd.read())
@@ -397,14 +397,14 @@ class Subject:
     def __init__(self):
         self._observers: list[Observer] = []
         self._state = None
-    
+
     def attach(self, observer: "Observer"):
         self._observers.append(observer)
-    
+
     def notify(self):
         for observer in self._observers:
             observer.update(self._state)
-    
+
     def set_state(self, state):
         self._state = state
         self.notify()
@@ -454,7 +454,7 @@ class BubbleSort(SortStrategy):
 class Sorter:
     def __init__(self, strategy: SortStrategy):
         self._strategy = strategy
-    
+
     def sort(self, data: list) -> list:
         return self._strategy.sort(data)
 ```
@@ -467,7 +467,7 @@ class Sorter:
 class Command(ABC):
     @abstractmethod
     def execute(self): pass
-    
+
     @abstractmethod
     def undo(self): pass
 
@@ -478,21 +478,21 @@ class Light:
 class LightOnCommand(Command):
     def __init__(self, light: Light):
         self.light = light
-    
+
     def execute(self):
         self.light.on()
-    
+
     def undo(self):
         self.light.off()
 
 class RemoteControl:
     def __init__(self):
         self._history: list[Command] = []
-    
+
     def execute(self, command: Command):
         command.execute()
         self._history.append(command)
-    
+
     def undo_last(self):
         if self._history:
             self._history.pop().undo()

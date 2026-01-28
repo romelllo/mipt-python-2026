@@ -1,7 +1,7 @@
-# Семинар 4: Основы веб-технологий
+# Семинар 4: Общее представление о WEB
 
-**Модуль:** 3 — Веб-сервисы на Python  
-**Дата:** ДД.ММ.ГГГГ  
+**Модуль:** 3 — Создание Web-сервисов на Python
+**Дата:** 25.02.2026
 **Презентация:** [ссылка на презентацию]
 
 ---
@@ -181,9 +181,9 @@ response = requests.get(
 ```python
 import requests
 from requests.exceptions import (
-    RequestException, 
-    ConnectionError, 
-    Timeout, 
+    RequestException,
+    ConnectionError,
+    Timeout,
     HTTPError
 )
 
@@ -193,7 +193,7 @@ try:
         timeout=3  # Таймаут в секундах
     )
     response.raise_for_status()  # Выбросит HTTPError для 4xx/5xx
-    
+
 except ConnectionError:
     print("Ошибка подключения")
 except Timeout:
@@ -211,10 +211,10 @@ except RequestException as e:
 with requests.Session() as session:
     # Установить базовые заголовки для всех запросов
     session.headers.update({"User-Agent": "MyApp/1.0"})
-    
+
     # Первый запрос — сервер установит cookie
     session.get("https://httpbin.org/cookies/set/session_id/abc123")
-    
+
     # Второй запрос — cookie автоматически отправится
     response = session.get("https://httpbin.org/cookies")
     print(response.json())  # {'cookies': {'session_id': 'abc123'}}
@@ -394,12 +394,12 @@ class SimpleHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(response).encode())
         else:
             self.send_error(404, "Not Found")
-    
+
     def do_POST(self):
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length)
         data = json.loads(body)
-        
+
         self.send_response(201)
         self.send_header("Content-Type", "application/json")
         self.end_headers()

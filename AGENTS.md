@@ -69,11 +69,11 @@ ruff check --fix .
 ruff check --fix . && ruff format .
 ```
 
-### Type Checking (mypy)
+### Type Checking (ty)
 
 ```bash
-mypy seminars/
-mypy path/to/file.py
+ty check
+ty check path/to/file.py
 ```
 
 ### Testing (pytest)
@@ -127,7 +127,7 @@ jupyter lab
 - Follow PEP 8 conventions
 - Use Ruff for formatting (line length: 88)
 - Use type hints for all function signatures
-- Use mypy for type checking
+- Use ty for type checking
 
 ### Imports (sorted by ruff)
 
