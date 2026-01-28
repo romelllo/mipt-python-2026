@@ -68,6 +68,7 @@ sqlite3 university.db
 .schema students -- структура конкретной таблицы
 .mode column    -- табличный вывод
 .headers on     -- показывать заголовки
+.read файл.sql  -- выполнить SQL из файла
 .quit           -- выход
 ```
 
@@ -207,6 +208,11 @@ DROP TABLE IF EXISTS students;
 
 В папке `data/`:
 - `university.sql` — полный скрипт для создания учебной БД
+
+> Чтобы загрузить файл `.sql` в консоли sqlite3:
+> ```sql
+> .read путь_к_файлу.sql
+> ```
 
 ---
 
