@@ -122,7 +122,7 @@ mipt-python-2026/
 │   │   ├── examples/
 │   │   ├── exercises/
 │   │   └── data/
-│   ├── seminar_02_advanced_sql/
+│   ├── seminar_02_db_design/
 │   │   ├── README.md
 │   │   ├── examples/
 │   │   ├── exercises/
