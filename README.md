@@ -82,6 +82,7 @@ sudo dnf install sqlite
 5. Откройте новый терминал и проверьте: `sqlite3 --version`
 
 ### Установка проекта
+```bash
 # Клонировать репозиторий
 git clone https://github.com/romelllo/mipt-python-2026.git
 cd mipt-python-2026
