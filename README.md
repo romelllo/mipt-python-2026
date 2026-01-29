@@ -44,11 +44,44 @@
 
 - Python 3.10 или выше
 - Git
+- SQLite3
 - [uv](https://docs.astral.sh/uv/) — современный менеджер пакетов Python
 
 ## Установка
 
+### Установка SQLite3
+
+**macOS (через Homebrew):**
 ```bash
+# Если Homebrew не установлен:
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Установить SQLite3
+brew install sqlite3
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt-get update
+sudo apt-get install sqlite3
+```
+
+**Linux (Fedora/RHEL):**
+```bash
+sudo dnf install sqlite
+```
+
+**Windows:**
+1. Скачайте предкомпилированный бинарник с [официального сайта SQLite](https://www.sqlite.org/download.html)
+2. Найдите раздел "Precompiled Binaries for Windows" и скачайте `sqlite-tools-win32-x86-3*.zip`
+3. Распакуйте архив
+4. Добавьте папку с `sqlite3.exe` в переменную окружения PATH:
+   - Откройте "Система" → "Переменные окружения"
+   - Нажмите "Изменить переменные среды пользователя"
+   - Отредактируйте переменную `PATH` и добавьте путь к папке с sqlite3
+5. Откройте новый терминал и проверьте: `sqlite3 --version`
+
+### Установка проекта
 # Клонировать репозиторий
 git clone https://github.com/romelllo/mipt-python-2026.git
 cd mipt-python-2026

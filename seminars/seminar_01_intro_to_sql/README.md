@@ -14,7 +14,7 @@
 - Изменять структуру таблиц (ALTER TABLE)
 - Вставлять, обновлять и удалять данные (INSERT, UPDATE, DELETE)
 - Писать простые запросы выборки (SELECT с WHERE)
-- Работать с SQLite через консоль и DB Browser
+- Работать с SQLite через консоль
 
 ---
 
@@ -49,14 +49,46 @@
 - Встроен в Python (модуль `sqlite3`)
 - Идеален для обучения и прототипирования
 
-### 2. Инструменты для работы
+### 2. Установка SQLite3 и инструменты для работы
 
-#### DB Browser for SQLite (рекомендуется)
-- Скачать: https://sqlitebrowser.org/
-- Графический интерфейс для работы с SQLite
-- Удобно для начинающих
+#### Установка SQLite3
 
-#### Консоль sqlite3
+**macOS (через Homebrew):**
+```bash
+# Если Homebrew не установлен:
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Установить SQLite3
+brew install sqlite3
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt-get update
+sudo apt-get install sqlite3
+```
+
+**Linux (Fedora/RHEL):**
+```bash
+sudo dnf install sqlite
+```
+
+**Windows:**
+1. Скачайте предкомпилированный бинарник с [официального сайта SQLite](https://www.sqlite.org/download.html)
+2. Найдите раздел "Precompiled Binaries for Windows" и скачайте `sqlite-tools-win32-x86-3*.zip`
+3. Распакуйте архив
+4. Добавьте папку с `sqlite3.exe` в переменную окружения PATH:
+   - Откройте "Система" → "Переменные окружения"
+   - Нажмите "Изменить переменные среды пользователя"
+   - Отредактируйте переменную `PATH` и добавьте путь к папке с sqlite3
+5. Откройте новый терминал и проверьте: `sqlite3 --version`
+
+**Проверка установки (все ОС):**
+```bash
+sqlite3 --version
+```
+
+#### Работа с SQLite через консоль
 ```bash
 # Создать/открыть базу данных
 sqlite3 university.db
@@ -251,5 +283,4 @@ DROP TABLE IF EXISTS students;
 
 - [SQLite Tutorial](https://www.sqlitetutorial.net/) — подробный туториал по SQLite
 - [SQL Tutorial (W3Schools)](https://www.w3schools.com/sql/) — интерактивные примеры SQL
-- [DB Browser for SQLite](https://sqlitebrowser.org/) — графический инструмент
 - [SQLBolt](https://sqlbolt.com/) — интерактивные уроки SQL (уроки 1-4)
