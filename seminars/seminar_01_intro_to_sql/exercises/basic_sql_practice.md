@@ -2,7 +2,7 @@
 
 ## Подготовка
 
-1. Откройте DB Browser for SQLite или консоль sqlite3
+1. Откройте консоль sqlite3
 2. Создайте новую базу данных `practice.db`
 3. Выполните скрипты из папки `examples/` для создания учебных данных
 
@@ -75,7 +75,7 @@ CREATE TABLE employees (
 
 ```sql
 INSERT INTO books (title, author, year_published, pages)
-VALUES 
+VALUES
     ('Война и мир', 'Толстой', 1869, 1225),
     ('Преступление и наказание', 'Достоевский', 1866, 672),
     ('Мастер и Маргарита', 'Булгаков', 1967, 480),
@@ -92,7 +92,7 @@ VALUES
 
 ```sql
 INSERT INTO employees (name, position, salary, hire_date, email)
-VALUES 
+VALUES
     ('Иванов Иван', 'Менеджер', 80000, '2020-03-15', 'ivanov@company.ru'),
     ('Петрова Мария', 'Разработчик', 120000, '2021-07-01', 'petrova@company.ru'),
     ('Сидоров Алексей', 'Аналитик', 95000, '2022-01-10', 'sidorov@company.ru');
