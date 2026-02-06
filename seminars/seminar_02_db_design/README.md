@@ -80,7 +80,7 @@ WHERE (enrollment_year = 2021 OR enrollment_year = 2022) AND gpa > 4.0;
 
 ### Практика
 
-Перейдите к файлу [`exercises/db_design_practice.md`](exercises/db_design_practice.md) и выполните **Часть 1: Логические операторы** (задания 1.1–1.3).
+Перейдите к файлу [`exercises/db_design_practice.md`](exercises/db_design_practice.md) и выполните **Часть 1: Логические операторы** (задания 1.1–1.4).
 
 Попробуйте решить каждое задание самостоятельно, прежде чем раскрывать решение!
 
@@ -131,7 +131,7 @@ WHERE gpa >= 3.5 AND gpa <= 4.5;
 
 ### Практика
 
-Перейдите к файлу [`exercises/db_design_practice.md`](exercises/db_design_practice.md) и выполните **Часть 2: LIKE, IN, BETWEEN** (задания 2.1–2.4).
+Перейдите к файлу [`exercises/db_design_practice.md`](exercises/db_design_practice.md) и выполните **Часть 2: LIKE, IN, BETWEEN** (задания 2.1–2.5).
 
 ---
 
@@ -221,7 +221,7 @@ GROUP BY c.course_id;
 
 ### Практика
 
-Перейдите к файлу [`exercises/db_design_practice.md`](exercises/db_design_practice.md) и выполните **Часть 4: JOIN** (задания 4.1–4.3).
+Перейдите к файлу [`exercises/db_design_practice.md`](exercises/db_design_practice.md) и выполните **Часть 4: JOIN** (задания 4.1–4.4).
 
 ---
 
@@ -313,7 +313,7 @@ WHERE student_id NOT IN (
 
 ### Практика
 
-Перейдите к файлу [`exercises/db_design_practice.md`](exercises/db_design_practice.md) и выполните **Часть 7: Вложенные запросы** (задания 7.1–7.3).
+Перейдите к файлу [`exercises/db_design_practice.md`](exercises/db_design_practice.md) и выполните **Часть 7: Вложенные запросы** (задания 7.1–7.4).
 
 ---
 
