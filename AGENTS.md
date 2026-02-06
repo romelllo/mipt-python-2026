@@ -242,6 +242,60 @@ async def test_async_endpoint():
     assert response.status_code == 200
 ```
 
+## Seminar Structure Guidelines
+
+All seminars should follow the **"theory → immediate practice"** approach. Instead of a large block of theory followed by a large block of exercises, each seminar is split into small topic blocks. After each block of theory (with examples), students go to the exercises document and solve exercises for that specific topic.
+
+### Seminar directory structure
+
+```
+seminar_XX_topic_name/
+├── README.md                      # Main seminar document (theory blocks with pointers to exercises)
+├── data/
+│   └── *.sql / *.csv / ...       # Data files / database scripts
+├── examples/
+│   └── *.sql / *.py              # Example code organized by topic sections
+└── exercises/
+    └── *.md                       # Exercises document (organized by the same topic blocks)
+```
+
+### README.md structure
+
+Each `README.md` should follow this pattern:
+
+1. **Header** — seminar title, module, date, links
+2. **Goals** — list of learning objectives
+3. **Setup** — preparation steps (DB loading, environment setup, etc.)
+4. **Plan** — table with time estimates, topic blocks, and pointers to exercise sections
+5. **Topic blocks** — each block contains:
+   - Short theory explanation with code examples
+   - Reference to detailed examples file: `> **Подробнее:** см. файл [examples/...](examples/...)`
+   - Practice pointer: `### Практика` section directing students to the specific exercises section
+6. **Files summary** — links to all files in the seminar directory
+7. **Additional materials** — external links for further reading
+
+### Exercises file structure
+
+Each exercises file (`exercises/*.md`) should follow this pattern:
+
+1. **Setup** — how to prepare the environment for exercises
+2. **Instruction** — remind students to try solving before looking at solutions
+3. **Parts** — one part per theory block, each containing:
+   - Cross-reference back to the theory block and examples file
+   - Multiple exercises with increasing difficulty
+   - Each exercise has a `<details><summary>Подсказка</summary>` hint (optional)
+   - Each exercise has a `<details><summary>Решение</summary>` with the solution
+4. **Bonus exercises** — harder exercises combining multiple topics
+
+### Key principles
+
+- **Small portions**: theory → practice → theory → practice (not big-theory → big-practice)
+- **Self-paced**: students try to solve exercises on their own before revealing the solution
+- **Cross-references**: exercises link back to the relevant theory block, and theory blocks link to the exercises
+- **Hints before solutions**: provide a hint (подсказка) that nudges the student in the right direction
+- **Progressive difficulty**: exercises within each part go from simple to complex
+- **Bonus section**: advanced exercises that combine multiple topics for faster students
+
 ## Language
 
 - Comments and docstrings: Russian or English (educational course for Russian students)
