@@ -1,52 +1,79 @@
-# Семинар 3: Паттерны ООП на Python для разработки приложения
+# Семинар 3: Паттерны проектирования и принципы SOLID
 
 **Модуль:** 2 — Объектно-ориентированное программирование и основы работы с базами данных в Python  
-**Дата:** 16.02.2026  
-**Презентация:** [ссылка на презентацию]
+**Дата:** 16.02.2026
 
 ---
 
 ## Цели семинара
 
-После этого семинара студенты смогут:
-- Понимать и применять принципы SOLID
-- Реализовывать основные паттерны проектирования на Python
-- Выбирать подходящий паттерн для решения конкретных задач
-- Писать гибкий и поддерживаемый код
+После этого семинара вы сможете:
+- Называть и кратко объяснять все 5 принципов SOLID
+- Находить нарушения SOLID в чужом коде
+- Реализовывать 6 ключевых паттернов проектирования на Python: Factory Method, Builder, Adapter, Decorator, Strategy, Observer
+- Выбирать подходящий паттерн для конкретной задачи
+
+> **Важно:** Паттерны — мощный инструмент, но «видеть» их в собственном коде получается только с практикой. Цель семинара — познакомиться с основными паттернами, а не запомнить все сразу.
 
 ---
 
-## План занятия
+## Подготовка
 
-| Время | Тема | Материалы |
-|-------|------|-----------|
-| 10-15 мин | Введение в паттерны и SOLID | Презентация |
-| 20 мин | Принципы SOLID с примерами | `examples/01_solid_principles.py` |
-| 25 мин | Порождающие паттерны | `examples/02_creational_patterns.py` |
-| 25 мин | Структурные паттерны | `examples/03_structural_patterns.py` |
-| 25 мин | Поведенческие паттерны | `examples/04_behavioral_patterns.py` |
-| 25 мин | Практика | `exercises/oop_patterns_practice.md` |
+Для этого семинара достаточно Python 3.10+ и знания основ ООП (классы, наследование, `ABC`).
+
+```bash
+# Запуск примеров
+python seminars/seminar_03_oop_patterns/examples/01_solid_principles.py
+python seminars/seminar_03_oop_patterns/examples/02_creational_patterns.py
+python seminars/seminar_03_oop_patterns/examples/03_structural_patterns.py
+python seminars/seminar_03_oop_patterns/examples/04_behavioral_patterns.py
+```
 
 ---
 
-## 1. Принципы SOLID
+## План семинара
 
-SOLID — это пять принципов объектно-ориентированного проектирования:
+Семинар построен по принципу **«теория → практика»**: после каждого блока теории вы переходите к упражнениям в файле [`exercises/oop_patterns_practice.md`](exercises/oop_patterns_practice.md).
 
-### S — Single Responsibility Principle (Принцип единственной ответственности)
+| Время | Тема | Практика |
+|-------|------|----------|
+| 20 мин | Блок 1: Повторение принципов SOLID | → Упражнения: Часть 1 (анализ кода) |
+| 10 мин | Блок 2: Порождающие паттерны (Factory Method, Builder) | — |
+| 10 мин | Блок 3: Структурные паттерны (Adapter, Decorator) | — |
+| 10 мин | Блок 4: Поведенческие паттерны (Strategy, Observer) | → Упражнения: Часть 2 (2 задачи) |
+| 20 мин | Интерактив: ситуационные задачи (Chat Polls) | → Упражнения: Часть 3 |
+| 10 мин | Подведение итогов | — |
 
-Класс должен иметь только одну причину для изменения.
+> **Примечание:** Суммарно в таблице 80 минут — оставшиеся ~10 минут отведены на переходы между блоками, вопросы и организационные моменты. После блоков теории по паттернам студенты решают **2 основные задачи** (Factory Method + Adapter). Дополнительные задачи по Builder, Decorator, Strategy и Observer доступны для тех, кто справится быстрее — см. раздел «Дополнительные задания» в файле упражнений.
+
+---
+
+## Блок 1: Принципы SOLID (20 мин)
+
+SOLID — это пять принципов проектирования, которые помогают писать гибкий и поддерживаемый код:
+
+| Буква | Принцип | Суть (одним предложением) |
+|-------|---------|---------------------------|
+| **S** | Single Responsibility | У класса одна причина для изменения |
+| **O** | Open/Closed | Открыт для расширения, закрыт для модификации |
+| **L** | Liskov Substitution | Подкласс можно подставить вместо базового класса |
+| **I** | Interface Segregation | Много маленьких интерфейсов лучше одного большого |
+| **D** | Dependency Inversion | Зависьте от абстракций, а не от конкретных реализаций |
+
+### S — Single Responsibility Principle
+
+Класс должен отвечать только за одну вещь.
 
 ```python
-# Плохо: класс делает слишком много
+# Плохо: один класс делает всё
 class User:
     def __init__(self, name: str, email: str):
         self.name = name
         self.email = email
 
-    def save_to_db(self): ...      # Работа с БД
-    def send_email(self): ...       # Отправка email
-    def generate_report(self): ...  # Генерация отчёта
+    def save_to_db(self): ...
+    def send_email(self): ...
+    def generate_report(self): ...
 
 # Хорошо: разделяем ответственности
 class User:
@@ -61,9 +88,9 @@ class EmailService:
     def send(self, user: User, message: str): ...
 ```
 
-### O — Open/Closed Principle (Принцип открытости/закрытости)
+### O — Open/Closed Principle
 
-Классы должны быть открыты для расширения, но закрыты для модификации.
+Добавляем новое поведение через наследование, а не изменение существующего кода.
 
 ```python
 from abc import ABC, abstractmethod
@@ -73,10 +100,6 @@ class Discount(ABC):
     def calculate(self, price: float) -> float:
         pass
 
-class NoDiscount(Discount):
-    def calculate(self, price: float) -> float:
-        return price
-
 class PercentDiscount(Discount):
     def __init__(self, percent: float):
         self.percent = percent
@@ -84,7 +107,7 @@ class PercentDiscount(Discount):
     def calculate(self, price: float) -> float:
         return price * (1 - self.percent / 100)
 
-# Легко добавить новый тип скидки без изменения существующего кода
+# Новый тип скидки — без изменения существующего кода
 class FixedDiscount(Discount):
     def __init__(self, amount: float):
         self.amount = amount
@@ -93,21 +116,11 @@ class FixedDiscount(Discount):
         return max(0, price - self.amount)
 ```
 
-### L — Liskov Substitution Principle (Принцип подстановки Барбары Лисков)
+### L — Liskov Substitution Principle
 
-Объекты подклассов должны быть взаимозаменяемы с объектами базового класса.
+Подклассы должны быть взаимозаменяемы с базовым классом без неожиданного поведения.
 
 ```python
-class Bird:
-    def fly(self) -> str:
-        return "Flying"
-
-# Плохо: пингвин — птица, но не летает
-class Penguin(Bird):
-    def fly(self) -> str:
-        raise NotImplementedError("Penguins can't fly!")
-
-# Хорошо: разделяем интерфейсы
 class Bird(ABC):
     @abstractmethod
     def move(self) -> str:
@@ -120,23 +133,17 @@ class FlyingBird(Bird):
 class SwimmingBird(Bird):
     def move(self) -> str:
         return "Swimming"
+
+# Пингвин — птица, но не летает. Решаем через правильную иерархию.
+class Penguin(SwimmingBird):
+    pass
 ```
 
-### I — Interface Segregation Principle (Принцип разделения интерфейса)
+### I — Interface Segregation Principle
 
-Клиенты не должны зависеть от интерфейсов, которые они не используют.
+Не заставляйте класс реализовывать методы, которые ему не нужны.
 
 ```python
-# Плохо: один большой интерфейс
-class Worker(ABC):
-    @abstractmethod
-    def work(self): pass
-    @abstractmethod
-    def eat(self): pass
-    @abstractmethod
-    def sleep(self): pass
-
-# Хорошо: маленькие специализированные интерфейсы
 class Workable(ABC):
     @abstractmethod
     def work(self): pass
@@ -153,24 +160,12 @@ class Robot(Workable):  # Роботу не нужно есть
     def work(self): ...
 ```
 
-### D — Dependency Inversion Principle (Принцип инверсии зависимостей)
+### D — Dependency Inversion Principle
 
-Модули верхнего уровня не должны зависеть от модулей нижнего уровня. Оба должны зависеть от абстракций.
+Зависьте от абстракций, а не от конкретных реализаций.
 
 ```python
-# Плохо: жёсткая зависимость
-class MySQLDatabase:
-    def connect(self): ...
-    def execute(self, query: str): ...
-
-class UserService:
-    def __init__(self):
-        self.db = MySQLDatabase()  # Жёсткая связь
-
-# Хорошо: зависимость от абстракции
 class Database(ABC):
-    @abstractmethod
-    def connect(self): pass
     @abstractmethod
     def execute(self, query: str): pass
 
@@ -179,43 +174,27 @@ class UserService:
         self.db = db
 ```
 
+> **Подробнее:** см. файл [`examples/01_solid_principles.py`](examples/01_solid_principles.py) — полные примеры всех пяти принципов с демонстрацией.
+
+### Практика
+
+Перейдите к файлу [`exercises/oop_patterns_practice.md`](exercises/oop_patterns_practice.md) и выполните **Часть 1: Анализ нарушений SOLID** (задания 1.1–1.5). Вам будут показаны фрагменты кода — определите, какой принцип нарушен и почему.
+
 ---
 
-## 2. Порождающие паттерны (Creational Patterns)
+## Блок 2: Порождающие паттерны — Factory Method и Builder (10 мин)
 
-Отвечают за создание объектов.
-
-### Singleton (Одиночка)
-
-Гарантирует существование только одного экземпляра класса.
-
-```python
-class DatabaseConnection:
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._initialized = False
-        return cls._instance
-
-    def __init__(self):
-        if self._initialized:
-            return
-        self.connection = "Connected to DB"
-        self._initialized = True
-
-# Использование
-db1 = DatabaseConnection()
-db2 = DatabaseConnection()
-print(db1 is db2)  # True
-```
+Порождающие паттерны отвечают за **создание объектов**.
 
 ### Factory Method (Фабричный метод)
 
-Определяет интерфейс для создания объектов, но позволяет подклассам решать, какой класс создавать.
+**Проблема:** Код создания объектов разбросан по всей программе. При добавлении нового типа нужно менять код во многих местах.
+
+**Решение:** Выносим создание объектов в отдельный метод/класс.
 
 ```python
+from abc import ABC, abstractmethod
+
 class Document(ABC):
     @abstractmethod
     def render(self) -> str:
@@ -230,28 +209,39 @@ class HTMLDocument(Document):
         return "Rendering HTML"
 
 class DocumentFactory:
-    @staticmethod
-    def create(doc_type: str) -> Document:
-        factories = {
-            "pdf": PDFDocument,
-            "html": HTMLDocument,
-        }
-        if doc_type not in factories:
-            raise ValueError(f"Unknown document type: {doc_type}")
-        return factories[doc_type]()
+    _types: dict[str, type[Document]] = {
+        "pdf": PDFDocument,
+        "html": HTMLDocument,
+    }
+
+    @classmethod
+    def create(cls, doc_type: str) -> Document:
+        if doc_type not in cls._types:
+            raise ValueError(f"Unknown type: {doc_type}")
+        return cls._types[doc_type]()
+
+# Использование
+doc = DocumentFactory.create("pdf")
+print(doc.render())  # "Rendering PDF"
 ```
+
+**Когда использовать:** Вы не знаете заранее, какой именно объект нужно создать — решение принимается в runtime.
 
 ### Builder (Строитель)
 
-Позволяет создавать сложные объекты пошагово.
+**Проблема:** Конструктор класса принимает слишком много параметров. Часть из них опциональная. Создание объекта превращается в нечитаемый вызов.
+
+**Решение:** Собираем объект пошагово через цепочку вызовов (fluent interface).
 
 ```python
+from dataclasses import dataclass, field
+
+@dataclass
 class Pizza:
-    def __init__(self):
-        self.size = ""
-        self.cheese = False
-        self.pepperoni = False
-        self.mushrooms = False
+    size: str = ""
+    cheese: bool = False
+    pepperoni: bool = False
+    mushrooms: bool = False
 
 class PizzaBuilder:
     def __init__(self):
@@ -259,7 +249,7 @@ class PizzaBuilder:
 
     def set_size(self, size: str) -> "PizzaBuilder":
         self._pizza.size = size
-        return self
+        return self  # Возвращаем self для цепочки
 
     def add_cheese(self) -> "PizzaBuilder":
         self._pizza.cheese = True
@@ -280,41 +270,55 @@ pizza = (PizzaBuilder()
          .build())
 ```
 
+**Когда использовать:** Объект сложный, с множеством опциональных параметров.
+
+> **Подробнее:** см. файл [`examples/02_creational_patterns.py`](examples/02_creational_patterns.py) — Factory Method и Builder с полными примерами.
+
+### Практика
+
+После блока 4 вы выполните задание 2.1 (Factory Method) из **Части 2** файла [`exercises/oop_patterns_practice.md`](exercises/oop_patterns_practice.md).
+
 ---
 
-## 3. Структурные паттерны (Structural Patterns)
+## Блок 3: Структурные паттерны — Adapter и Decorator (10 мин)
 
-Отвечают за компоновку классов и объектов.
+Структурные паттерны отвечают за **компоновку объектов** в более крупные структуры.
 
 ### Adapter (Адаптер)
 
-Позволяет объектам с несовместимыми интерфейсами работать вместе.
+**Проблема:** Нужно использовать существующий класс, но его интерфейс не подходит к вашему коду.
+
+**Решение:** Создаём обёртку, которая переводит один интерфейс в другой.
 
 ```python
-# Старый интерфейс
+# Старая система — работает с копейками
 class OldPaymentSystem:
-    def make_payment(self, amount: int) -> str:
-        return f"Paid {amount} kopecks"
+    def make_payment(self, amount_kopecks: int) -> str:
+        return f"Paid {amount_kopecks} kopecks"
 
-# Новый интерфейс
+# Новый интерфейс — работает с рублями
 class PaymentProcessor(ABC):
     @abstractmethod
-    def pay(self, amount: float) -> str:
+    def pay(self, amount_rubles: float) -> str:
         pass
 
-# Адаптер
+# Адаптер: рубли → копейки
 class PaymentAdapter(PaymentProcessor):
     def __init__(self, old_system: OldPaymentSystem):
-        self.old_system = old_system
+        self._old_system = old_system
 
-    def pay(self, amount: float) -> str:
-        kopecks = int(amount * 100)
-        return self.old_system.make_payment(kopecks)
+    def pay(self, amount_rubles: float) -> str:
+        kopecks = int(amount_rubles * 100)
+        return self._old_system.make_payment(kopecks)
 ```
+
+**Когда использовать:** Интеграция с legacy-кодом или внешними библиотеками с неподходящим интерфейсом.
 
 ### Decorator (Декоратор)
 
-Динамически добавляет объекту новые обязанности.
+**Проблема:** Нужно добавлять объекту новые обязанности, не изменяя его класс. При этом комбинации могут быть произвольными.
+
+**Решение:** Оборачиваем объект в декораторы, каждый из которых добавляет свою функциональность.
 
 ```python
 class Coffee(ABC):
@@ -339,180 +343,174 @@ class CoffeeDecorator(Coffee):
 
 class MilkDecorator(CoffeeDecorator):
     def cost(self) -> float:
-        return self._coffee.cost() + 20.0
+        return self._coffee.cost() + 30.0
 
     def description(self) -> str:
         return f"{self._coffee.description()} + Milk"
 
-# Использование
-coffee = SimpleCoffee()
-coffee_with_milk = MilkDecorator(coffee)
-print(coffee_with_milk.description())  # "Coffee + Milk"
-print(coffee_with_milk.cost())         # 120.0
+# Использование: декораторы комбинируются
+coffee = MilkDecorator(SimpleCoffee())
+print(coffee.description())  # "Coffee + Milk"
+print(coffee.cost())         # 130.0
 ```
 
-### Facade (Фасад)
+**Когда использовать:** Нужно динамически комбинировать поведение объекта из «кирпичиков».
 
-Предоставляет простой интерфейс к сложной подсистеме.
+> **Подробнее:** см. файл [`examples/03_structural_patterns.py`](examples/03_structural_patterns.py) — Adapter и Decorator с развёрнутыми примерами.
 
-```python
-class CPU:
-    def freeze(self): print("CPU freeze")
-    def execute(self): print("CPU execute")
+### Практика
 
-class Memory:
-    def load(self, data: str): print(f"Memory load: {data}")
-
-class HardDrive:
-    def read(self) -> str: return "boot data"
-
-class ComputerFacade:
-    def __init__(self):
-        self.cpu = CPU()
-        self.memory = Memory()
-        self.hdd = HardDrive()
-
-    def start(self):
-        self.cpu.freeze()
-        self.memory.load(self.hdd.read())
-        self.cpu.execute()
-
-# Простой интерфейс для пользователя
-computer = ComputerFacade()
-computer.start()
-```
+После блока 4 вы выполните задание 2.2 (Adapter) из **Части 2** файла [`exercises/oop_patterns_practice.md`](exercises/oop_patterns_practice.md).
 
 ---
 
-## 4. Поведенческие паттерны (Behavioral Patterns)
+## Блок 4: Поведенческие паттерны — Strategy и Observer (10 мин)
 
-Отвечают за взаимодействие между объектами.
-
-### Observer (Наблюдатель)
-
-Определяет зависимость один-ко-многим между объектами.
-
-```python
-class Subject:
-    def __init__(self):
-        self._observers: list[Observer] = []
-        self._state = None
-
-    def attach(self, observer: "Observer"):
-        self._observers.append(observer)
-
-    def notify(self):
-        for observer in self._observers:
-            observer.update(self._state)
-
-    def set_state(self, state):
-        self._state = state
-        self.notify()
-
-class Observer(ABC):
-    @abstractmethod
-    def update(self, state): pass
-
-class EmailNotifier(Observer):
-    def update(self, state):
-        print(f"Email: State changed to {state}")
-
-class SMSNotifier(Observer):
-    def update(self, state):
-        print(f"SMS: State changed to {state}")
-```
+Поведенческие паттерны отвечают за **взаимодействие между объектами** и распределение обязанностей.
 
 ### Strategy (Стратегия)
 
-Определяет семейство алгоритмов, инкапсулирует каждый из них и делает взаимозаменяемыми.
+**Проблема:** В коде много `if/elif/else`, которые выбирают алгоритм. При добавлении нового алгоритма нужно менять существующий код.
+
+**Решение:** Выносим каждый алгоритм в отдельный класс с общим интерфейсом. Алгоритм можно менять в runtime.
 
 ```python
-class SortStrategy(ABC):
+class PaymentStrategy(ABC):
     @abstractmethod
-    def sort(self, data: list) -> list:
+    def pay(self, amount: float) -> str:
         pass
 
-class QuickSort(SortStrategy):
-    def sort(self, data: list) -> list:
-        if len(data) <= 1:
-            return data
-        pivot = data[0]
-        less = [x for x in data[1:] if x <= pivot]
-        greater = [x for x in data[1:] if x > pivot]
-        return self.sort(less) + [pivot] + self.sort(greater)
+class CreditCardPayment(PaymentStrategy):
+    def pay(self, amount: float) -> str:
+        return f"Paid {amount} by Credit Card"
 
-class BubbleSort(SortStrategy):
-    def sort(self, data: list) -> list:
-        result = data.copy()
-        n = len(result)
-        for i in range(n):
-            for j in range(0, n - i - 1):
-                if result[j] > result[j + 1]:
-                    result[j], result[j + 1] = result[j + 1], result[j]
-        return result
+class PayPalPayment(PaymentStrategy):
+    def pay(self, amount: float) -> str:
+        return f"Paid {amount} via PayPal"
 
-class Sorter:
-    def __init__(self, strategy: SortStrategy):
+class ShoppingCart:
+    def __init__(self):
+        self._strategy: PaymentStrategy | None = None
+
+    def set_payment(self, strategy: PaymentStrategy) -> None:
         self._strategy = strategy
 
-    def sort(self, data: list) -> list:
-        return self._strategy.sort(data)
+    def checkout(self, amount: float) -> str:
+        if not self._strategy:
+            return "No payment method selected"
+        return self._strategy.pay(amount)
+
+# Стратегию можно менять в runtime
+cart = ShoppingCart()
+cart.set_payment(CreditCardPayment())
+print(cart.checkout(5000))  # "Paid 5000 by Credit Card"
+cart.set_payment(PayPalPayment())
+print(cart.checkout(5000))  # "Paid 5000 via PayPal"
 ```
 
-### Command (Команда)
+**Когда использовать:** Нужно выбирать между несколькими взаимозаменяемыми алгоритмами, особенно в runtime.
 
-Инкапсулирует запрос как объект.
+### Observer (Наблюдатель)
+
+**Проблема:** При изменении состояния одного объекта нужно оповестить множество других объектов. Жёсткая связь между ними делает код хрупким.
+
+**Решение:** Объект-издатель хранит список подписчиков и уведомляет их об изменениях.
 
 ```python
-class Command(ABC):
+class Observer(ABC):
     @abstractmethod
-    def execute(self): pass
+    def update(self, message: str) -> None:
+        pass
 
-    @abstractmethod
-    def undo(self): pass
-
-class Light:
-    def on(self): print("Light is ON")
-    def off(self): print("Light is OFF")
-
-class LightOnCommand(Command):
-    def __init__(self, light: Light):
-        self.light = light
-
-    def execute(self):
-        self.light.on()
-
-    def undo(self):
-        self.light.off()
-
-class RemoteControl:
+class NewsAgency:
     def __init__(self):
-        self._history: list[Command] = []
+        self._subscribers: list[Observer] = []
 
-    def execute(self, command: Command):
-        command.execute()
-        self._history.append(command)
+    def subscribe(self, observer: Observer) -> None:
+        self._subscribers.append(observer)
 
-    def undo_last(self):
-        if self._history:
-            self._history.pop().undo()
+    def publish(self, news: str) -> None:
+        for subscriber in self._subscribers:
+            subscriber.update(news)
+
+class EmailSubscriber(Observer):
+    def __init__(self, email: str):
+        self.email = email
+
+    def update(self, message: str) -> None:
+        print(f"Email to {self.email}: {message}")
+
+class SMSSubscriber(Observer):
+    def __init__(self, phone: str):
+        self.phone = phone
+
+    def update(self, message: str) -> None:
+        print(f"SMS to {self.phone}: {message}")
+
+# Использование
+agency = NewsAgency()
+agency.subscribe(EmailSubscriber("user@example.com"))
+agency.subscribe(SMSSubscriber("+7-999-123-4567"))
+agency.publish("Breaking News!")
+# Email to user@example.com: Breaking News!
+# SMS to +7-999-123-4567: Breaking News!
 ```
+
+**Когда использовать:** Один объект должен уведомлять множество других о своих изменениях (событийная модель).
+
+> **Подробнее:** см. файл [`examples/04_behavioral_patterns.py`](examples/04_behavioral_patterns.py) — Strategy и Observer с полными примерами.
+
+### Практика
+
+Перейдите к файлу [`exercises/oop_patterns_practice.md`](exercises/oop_patterns_practice.md) и выполните **Часть 2: Практика по паттернам** (задания 2.1–2.2). Это два коротких задания на Factory Method и Adapter.
+
+> Если останется время — в разделе «Дополнительные задания» есть задачи на Builder, Decorator, Strategy и Observer.
+
+---
+
+## Интерактив: Chat Polls (20 мин)
+
+Преподаватель зачитывает ситуации из реального мира разработки. Студенты голосуют в чате, какой паттерн лучше подходит.
+
+> Ситуации и варианты ответов находятся в файле [`exercises/oop_patterns_practice.md`](exercises/oop_patterns_practice.md), **Часть 3: Ситуационные задачи (Chat Polls)**.
+
+---
+
+## Подведение итогов (10 мин)
+
+### Шпаргалка по паттернам
+
+| Группа | Паттерн | Решает проблему |
+|--------|---------|----------------|
+| Порождающие | **Factory Method** | Создание объектов без привязки к конкретным классам |
+| Порождающие | **Builder** | Пошаговое создание сложных объектов |
+| Структурные | **Adapter** | Несовместимые интерфейсы |
+| Структурные | **Decorator** | Динамическое добавление функциональности |
+| Поведенческие | **Strategy** | Выбор алгоритма в runtime |
+| Поведенческие | **Observer** | Уведомление множества объектов об изменениях |
+
+### Главная мысль
+
+Паттерны — это **словарь** для общения между разработчиками. Вы не обязаны запоминать все детали реализации прямо сейчас. Важнее:
+
+1. **Знать, что такой паттерн существует** — чтобы узнать его при встрече
+2. **Понимать, какую проблему он решает** — чтобы вспомнить о нём в нужный момент
+3. **Практиковаться** — распознавание паттернов приходит с опытом написания и чтения кода
+
+> «Знание паттернов без практики — как знание рецептов без готовки. Полезно, но не сделает вас шефом.»
 
 ---
 
 ## Файлы семинара
 
-```
-seminar_03_oop_patterns/
-├── README.md                      # Этот файл
-├── examples/
-│   ├── 01_solid_principles.py     # Примеры SOLID
-│   ├── 02_creational_patterns.py  # Singleton, Factory, Builder
-│   ├── 03_structural_patterns.py  # Adapter, Decorator, Facade
-│   └── 04_behavioral_patterns.py  # Observer, Strategy, Command
-└── exercises/
-    └── oop_patterns_practice.md   # Практические задания
-```
+В папке `examples/`:
+- [`01_solid_principles.py`](examples/01_solid_principles.py) — все 5 принципов SOLID с демонстрацией
+- [`02_creational_patterns.py`](examples/02_creational_patterns.py) — Factory Method и Builder
+- [`03_structural_patterns.py`](examples/03_structural_patterns.py) — Adapter и Decorator
+- [`04_behavioral_patterns.py`](examples/04_behavioral_patterns.py) — Strategy и Observer
+
+В папке `exercises/`:
+- [`oop_patterns_practice.md`](exercises/oop_patterns_practice.md) — анализ SOLID, 2 задачи по паттернам, ситуационные задачи (Chat Polls) и дополнительные задания
 
 ---
 
@@ -522,15 +520,3 @@ seminar_03_oop_patterns/
 - [Python Design Patterns](https://python-patterns.guide/) — паттерны на Python
 - [SOLID Principles in Python](https://realpython.com/solid-principles-python/) — подробно о SOLID
 - [Паттерны проектирования (Банда четырёх)](https://ru.wikipedia.org/wiki/Design_Patterns) — классическая книга
-
----
-
-## Запуск примеров
-
-```bash
-# Запуск примеров
-python seminars/seminar_03_oop_patterns/examples/01_solid_principles.py
-python seminars/seminar_03_oop_patterns/examples/02_creational_patterns.py
-python seminars/seminar_03_oop_patterns/examples/03_structural_patterns.py
-python seminars/seminar_03_oop_patterns/examples/04_behavioral_patterns.py
-```

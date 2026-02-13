@@ -1,16 +1,875 @@
-# Практические задания: Паттерны проектирования ООП
+# Практические задания: Паттерны проектирования и принципы SOLID
 
-## Задание 1: Принципы SOLID (SRP + DIP)
+## Подготовка
 
-### Условие
+Для работы необходим Python 3.10+. Примеры кода можно запустить следующим образом:
 
-Рефакторингом исправьте нарушения принципов SOLID в следующем коде:
+```bash
+python seminars/seminar_03_oop_patterns/examples/01_solid_principles.py
+python seminars/seminar_03_oop_patterns/examples/02_creational_patterns.py
+python seminars/seminar_03_oop_patterns/examples/03_structural_patterns.py
+python seminars/seminar_03_oop_patterns/examples/04_behavioral_patterns.py
+```
+
+> **Как работать с заданиями:** прочитайте условие, попробуйте ответить самостоятельно, и только после этого раскройте решение для проверки.
+
+---
+
+## Часть 1: Анализ нарушений SOLID
+
+> **Теория:** [README.md — Блок 1](../README.md#блок-1-повторение-принципов-solid-20-мин) | **Примеры:** [`examples/01_solid_principles.py`](../examples/01_solid_principles.py)
+
+В каждом задании показан фрагмент кода. Определите, **какой принцип SOLID нарушен** и **почему**.
+
+### Задание 1.1
+
+```python
+class Employee:
+    def __init__(self, name: str, salary: float):
+        self.name = name
+        self.salary = salary
+
+    def calculate_pay(self) -> float:
+        return self.salary
+
+    def save_to_database(self) -> None:
+        print(f"INSERT INTO employees VALUES ('{self.name}', {self.salary})")
+
+    def generate_report(self) -> str:
+        return f"Report for {self.name}: salary = {self.salary}"
+
+    def send_email(self, message: str) -> None:
+        print(f"Sending '{message}' to {self.name}")
+```
+
+<details>
+<summary>Подсказка</summary>
+
+Сколько причин для изменения у этого класса? Что если изменится формат отчёта? Или способ отправки email? Или структура БД?
+
+</details>
+
+<details>
+<summary>Решение</summary>
+
+**Нарушен: S — Single Responsibility Principle**
+
+Класс `Employee` имеет **4 ответственности**:
+1. Хранение данных о сотруднике
+2. Работа с базой данных (`save_to_database`)
+3. Генерация отчётов (`generate_report`)
+4. Отправка email (`send_email`)
+
+Каждая из этих обязанностей — отдельная причина для изменения класса. Нужно разделить на `Employee` (данные), `EmployeeRepository` (БД), `ReportGenerator` (отчёты), `EmailService` (email).
+
+</details>
+
+### Задание 1.2
+
+```python
+class Shape:
+    def __init__(self, shape_type: str, **kwargs):
+        self.shape_type = shape_type
+        self.kwargs = kwargs
+
+    def area(self) -> float:
+        if self.shape_type == "circle":
+            return 3.14 * self.kwargs["radius"] ** 2
+        elif self.shape_type == "rectangle":
+            return self.kwargs["width"] * self.kwargs["height"]
+        elif self.shape_type == "triangle":
+            return 0.5 * self.kwargs["base"] * self.kwargs["height"]
+        else:
+            raise ValueError(f"Unknown shape: {self.shape_type}")
+```
+
+<details>
+<summary>Подсказка</summary>
+
+Что произойдёт, когда нужно добавить новую фигуру (например, трапецию)? Придётся ли менять существующий код?
+
+</details>
+
+<details>
+<summary>Решение</summary>
+
+**Нарушен: O — Open/Closed Principle**
+
+Чтобы добавить новую фигуру, нужно **модифицировать** метод `area()` — добавить ещё один `elif`. Класс не открыт для расширения.
+
+Правильный подход — абстрактный класс `Shape` с методом `area()` и отдельные подклассы `Circle`, `Rectangle`, `Triangle`, каждый со своей реализацией `area()`.
+
+</details>
+
+### Задание 1.3
+
+```python
+class Bird:
+    def fly(self) -> str:
+        return "Flying high!"
+
+class Sparrow(Bird):
+    def fly(self) -> str:
+        return "Sparrow flying"
+
+class Penguin(Bird):
+    def fly(self) -> str:
+        raise NotImplementedError("Penguins can't fly!")
+
+def make_birds_fly(birds: list[Bird]) -> None:
+    for bird in birds:
+        print(bird.fly())  # Упадёт на пингвине!
+```
+
+<details>
+<summary>Подсказка</summary>
+
+Можно ли безопасно подставить `Penguin` туда, где ожидается `Bird`? Что произойдёт?
+
+</details>
+
+<details>
+<summary>Решение</summary>
+
+**Нарушен: L — Liskov Substitution Principle**
+
+`Penguin` наследует от `Bird`, но **не может заменить** его — вызов `fly()` бросает исключение вместо возврата строки. Код, работающий с `Bird`, сломается при подстановке `Penguin`.
+
+Решение: разделить иерархию. `Bird` с методом `move()`, `FlyingBird` и `SwimmingBird` — как показано в примерах.
+
+</details>
+
+### Задание 1.4
+
+```python
+from abc import ABC, abstractmethod
+
+class MultiFunctionDevice(ABC):
+    @abstractmethod
+    def print_document(self, doc: str) -> None: pass
+
+    @abstractmethod
+    def scan_document(self) -> str: pass
+
+    @abstractmethod
+    def fax_document(self, doc: str, number: str) -> None: pass
+
+    @abstractmethod
+    def staple_document(self, doc: str) -> None: pass
+
+class SimplePrinter(MultiFunctionDevice):
+    def print_document(self, doc: str) -> None:
+        print(f"Printing: {doc}")
+
+    def scan_document(self) -> str:
+        raise NotImplementedError("Can't scan!")
+
+    def fax_document(self, doc: str, number: str) -> None:
+        raise NotImplementedError("Can't fax!")
+
+    def staple_document(self, doc: str) -> None:
+        raise NotImplementedError("Can't staple!")
+```
+
+<details>
+<summary>Подсказка</summary>
+
+`SimplePrinter` вынужден реализовать 4 метода, но реально использует только один. Что это за принцип?
+
+</details>
+
+<details>
+<summary>Решение</summary>
+
+**Нарушен: I — Interface Segregation Principle**
+
+`SimplePrinter` вынужден реализовать методы `scan_document`, `fax_document`, `staple_document`, которые ему не нужны. Интерфейс слишком «толстый».
+
+Решение: разделить на маленькие интерфейсы — `Printable`, `Scannable`, `Faxable`, `Stapleable`. `SimplePrinter` реализует только `Printable`.
+
+</details>
+
+### Задание 1.5
+
+```python
+import sqlite3
+
+class ReportService:
+    def __init__(self):
+        self.db = sqlite3.connect("production.db")  # Жёсткая зависимость
+
+    def get_report(self, report_id: int) -> dict:
+        cursor = self.db.execute(
+            f"SELECT * FROM reports WHERE id = {report_id}"  # SQL injection!
+        )
+        row = cursor.fetchone()
+        return {"id": row[0], "title": row[1], "data": row[2]}
+```
+
+<details>
+<summary>Подсказка</summary>
+
+`ReportService` сам создаёт подключение к конкретной БД. Можно ли протестировать этот класс без реальной базы данных?
+
+</details>
+
+<details>
+<summary>Решение</summary>
+
+**Нарушен: D — Dependency Inversion Principle**
+
+`ReportService` напрямую зависит от конкретной реализации — `sqlite3.connect("production.db")`. Нельзя:
+- Подменить БД для тестов (например, использовать in-memory SQLite)
+- Переключиться на другую СУБД (PostgreSQL, MySQL)
+
+Решение: принимать абстракцию `Database` через конструктор (Dependency Injection).
+
+*Бонус:* здесь также есть SQL-injection уязвимость — `f"SELECT ... {report_id}"` вместо параметризованного запроса.
+
+</details>
+
+---
+
+## Часть 2: Практика по паттернам (2 задания)
+
+> **Теория:** [README.md — Блоки 2–4](../README.md#блок-2-порождающие-паттерны--factory-method-и-builder-10-мин) | **Примеры:** [`02_creational_patterns.py`](../examples/02_creational_patterns.py), [`03_structural_patterns.py`](../examples/03_structural_patterns.py), [`04_behavioral_patterns.py`](../examples/04_behavioral_patterns.py)
+
+Решите **оба задания** ниже. Остальные задачи по паттернам — в разделе [Дополнительные задания](#дополнительные-задания) для тех, кто справится быстрее.
+
+### Задание 2.1: Factory Method
+
+Создайте фабрику уведомлений `NotificationFactory`, которая создаёт объекты уведомлений разных типов: `EmailNotification`, `SMSNotification`, `PushNotification`. Каждое уведомление должно иметь метод `send(message: str) -> str`.
+
+<details>
+<summary>Подсказка</summary>
+
+Используйте абстрактный класс `Notification` с методом `send`. Фабрика хранит маппинг `str -> type[Notification]`.
+
+</details>
+
+<details>
+<summary>Решение</summary>
+
+```python
+from abc import ABC, abstractmethod
+
+
+class Notification(ABC):
+    @abstractmethod
+    def send(self, message: str) -> str:
+        pass
+
+
+class EmailNotification(Notification):
+    def send(self, message: str) -> str:
+        return f"Email sent: {message}"
+
+
+class SMSNotification(Notification):
+    def send(self, message: str) -> str:
+        return f"SMS sent: {message}"
+
+
+class PushNotification(Notification):
+    def send(self, message: str) -> str:
+        return f"Push sent: {message}"
+
+
+class NotificationFactory:
+    _types: dict[str, type[Notification]] = {
+        "email": EmailNotification,
+        "sms": SMSNotification,
+        "push": PushNotification,
+    }
+
+    @classmethod
+    def create(cls, notification_type: str) -> Notification:
+        notification_type = notification_type.lower()
+        if notification_type not in cls._types:
+            available = ", ".join(cls._types.keys())
+            raise ValueError(
+                f"Unknown type: {notification_type}. Available: {available}"
+            )
+        return cls._types[notification_type]()
+
+
+# Использование
+for ntype in ["email", "sms", "push"]:
+    notification = NotificationFactory.create(ntype)
+    print(notification.send("Hello!"))
+```
+
+</details>
+
+### Задание 2.2: Adapter
+
+У вас есть старая библиотека для работы с температурой в Фаренгейтах:
+
+```python
+class FahrenheitSensor:
+    def get_temperature_f(self) -> float:
+        return 98.6  # Имитация считывания датчика
+```
+
+Ваш код работает с интерфейсом:
+
+```python
+class TemperatureSensor(ABC):
+    @abstractmethod
+    def get_temperature_celsius(self) -> float:
+        pass
+```
+
+Создайте адаптер `FahrenheitAdapter`, который преобразует Фаренгейты в Цельсии.
+
+<details>
+<summary>Подсказка</summary>
+
+Формула: `celsius = (fahrenheit - 32) * 5 / 9`. Адаптер оборачивает `FahrenheitSensor` и реализует интерфейс `TemperatureSensor`.
+
+</details>
+
+<details>
+<summary>Решение</summary>
+
+```python
+from abc import ABC, abstractmethod
+
+
+class FahrenheitSensor:
+    def get_temperature_f(self) -> float:
+        return 98.6
+
+
+class TemperatureSensor(ABC):
+    @abstractmethod
+    def get_temperature_celsius(self) -> float:
+        pass
+
+
+class FahrenheitAdapter(TemperatureSensor):
+    def __init__(self, sensor: FahrenheitSensor) -> None:
+        self._sensor = sensor
+
+    def get_temperature_celsius(self) -> float:
+        fahrenheit = self._sensor.get_temperature_f()
+        return round((fahrenheit - 32) * 5 / 9, 2)
+
+
+# Использование
+sensor = FahrenheitAdapter(FahrenheitSensor())
+print(f"{sensor.get_temperature_celsius()}°C")  # 37.0°C
+```
+
+</details>
+
+---
+
+## Часть 3: Ситуационные задачи (Chat Polls)
+
+> **Теория:** [README.md — Блоки 2–4](../README.md#блок-2-порождающие-паттерны--factory-method-и-builder-10-мин) | **Примеры:** [`02_creational_patterns.py`](../examples/02_creational_patterns.py), [`03_structural_patterns.py`](../examples/03_structural_patterns.py), [`04_behavioral_patterns.py`](../examples/04_behavioral_patterns.py)
+
+> Этот раздел используется преподавателем для интерактива в чате. Зачитывается ситуация, студенты голосуют за вариант ответа.
+
+---
+
+### Ситуация 1
+
+> Вы разрабатываете систему уведомлений. Пользователь может получать уведомления по Email, SMS и Push. Способ отправки должен **легко переключаться в runtime** — например, пользователь сменил настройки с Email на SMS.
+
+Какой паттерн лучше всего подойдёт?
+
+- A) Observer
+- B) Factory Method
+- C) Strategy
+- D) Decorator
+
+<details>
+<summary>Ответ</summary>
+
+**C) Strategy**
+
+Ключевое слово — «переключаться в runtime». Strategy позволяет менять алгоритм (способ отправки) на лету, не меняя код клиента.
+
+Observer тоже связан с уведомлениями, но он решает другую задачу — оповещение множества подписчиков об одном событии.
+
+</details>
+
+---
+
+### Ситуация 2
+
+> В интернет-магазине нужно поддерживать генерацию чеков в разных форматах: PDF, HTML, JSON. Формат выбирается **на основе настроек пользователя**, и в будущем могут добавиться новые форматы.
+
+Какой паттерн лучше всего подойдёт?
+
+- A) Builder
+- B) Adapter
+- C) Decorator
+- D) Factory Method
+
+<details>
+<summary>Ответ</summary>
+
+**D) Factory Method**
+
+Нужно создавать объекты разных типов (форматов чеков) на основе входного параметра. Factory Method инкапсулирует логику создания и позволяет легко добавлять новые форматы.
+
+</details>
+
+---
+
+### Ситуация 3
+
+> Вы интегрируете стороннюю библиотеку для отправки SMS. Её интерфейс (`send_sms(phone, text)`) отличается от вашего стандартного интерфейса `MessageSender.send(recipient, message)`. Менять стороннюю библиотеку нельзя.
+
+Какой паттерн лучше всего подойдёт?
+
+- A) Strategy
+- B) Adapter
+- C) Observer
+- D) Builder
+
+<details>
+<summary>Ответ</summary>
+
+**B) Adapter**
+
+Классическая ситуация для Adapter — нужно «перевести» один интерфейс в другой, чтобы несовместимые компоненты могли работать вместе. Мы не можем менять стороннюю библиотеку, поэтому оборачиваем её в адаптер.
+
+</details>
+
+---
+
+### Ситуация 4
+
+> В системе логирования к каждому сообщению нужно **опционально** добавлять: временную метку, уровень важности, цветовую подсветку, шифрование. Пользователь может выбрать **любую комбинацию** этих добавок.
+
+Какой паттерн лучше всего подойдёт?
+
+- A) Decorator
+- B) Builder
+- C) Strategy
+- D) Factory Method
+
+<details>
+<summary>Ответ</summary>
+
+**A) Decorator**
+
+Ключевое слово — «любая комбинация». Decorator позволяет динамически оборачивать объект в произвольное количество «слоёв», каждый из которых добавляет функциональность.
+
+Builder тоже собирает объект пошагово, но он создаёт объект один раз. Decorator добавляет поведение к уже существующему объекту.
+
+</details>
+
+---
+
+### Ситуация 5
+
+> Биржевая система должна отслеживать изменение цены акции. Когда цена меняется, **несколько независимых компонентов** должны среагировать: обновить график, отправить алерт трейдеру, записать в лог, пересчитать портфель.
+
+Какой паттерн лучше всего подойдёт?
+
+- A) Strategy
+- B) Observer
+- C) Adapter
+- D) Factory Method
+
+<details>
+<summary>Ответ</summary>
+
+**B) Observer**
+
+Ключевое слово — «несколько независимых компонентов должны среагировать». Observer реализует модель «один-ко-многим»: один издатель (цена акции) уведомляет множество подписчиков (график, алерт, лог, портфель).
+
+</details>
+
+---
+
+### Ситуация 6
+
+> Вы проектируете API для создания HTTP-запроса. Запрос может содержать URL, метод, заголовки, тело, query-параметры, timeout — но **большинство параметров опциональные**. Хочется удобный интерфейс для создания запросов.
+
+Какой паттерн лучше всего подойдёт?
+
+- A) Factory Method
+- B) Observer
+- C) Builder
+- D) Adapter
+
+<details>
+<summary>Ответ</summary>
+
+**C) Builder**
+
+Ключевое слово — «множество опциональных параметров» и «удобный интерфейс». Builder с fluent interface позволяет пошагово собирать сложный объект, указывая только нужные параметры.
+
+Пример из реальной жизни: `requests` библиотека в Python, `HttpRequest.Builder` в Java.
+
+</details>
+
+---
+
+### Ситуация 7 (bonus — сложная)
+
+> Мобильное приложение для фитнеса отправляет поздравления пользователю при достижении целей. Поздравление может быть отправлено через Push, Email или In-App. При этом к поздравлению можно **добавить GIF-анимацию, ссылку на соцсеть и кастомный текст**. Способ отправки выбирается один раз при настройке, а добавки — произвольные.
+
+Какие паттерны здесь уместно скомбинировать?
+
+- A) Strategy + Decorator
+- B) Factory Method + Observer
+- C) Builder + Adapter
+- D) Observer + Strategy
+
+<details>
+<summary>Ответ</summary>
+
+**A) Strategy + Decorator**
+
+- **Strategy** — для выбора способа отправки (Push / Email / In-App)
+- **Decorator** — для произвольной комбинации добавок (GIF, ссылка, кастомный текст)
+
+Каждый паттерн решает свою часть задачи: Strategy отвечает за «как отправить», Decorator — за «что добавить к сообщению».
+
+</details>
+
+---
+
+## Дополнительные задания
+
+> **Теория:** [README.md — Блоки 2–4](../README.md#блок-2-порождающие-паттерны--factory-method-и-builder-10-мин) | **Примеры:** [`02_creational_patterns.py`](../examples/02_creational_patterns.py), [`03_structural_patterns.py`](../examples/03_structural_patterns.py), [`04_behavioral_patterns.py`](../examples/04_behavioral_patterns.py)
+
+> Если вы справились с основными заданиями и у вас осталось время — попробуйте решить задачи ниже. Они более объёмные и потребуют написания кода с нуля.
+
+### Задание Д.1: Builder
+
+Создайте `QueryBuilder` для построения SQL-запросов с fluent interface. Поддержите:
+- `select(*columns)` — выбор колонок
+- `from_table(table)` — указание таблицы
+- `where(condition)` — условие фильтрации
+- `order_by(column)` — сортировка
+- `limit(n)` — ограничение количества строк
+- `build()` — возврат готовой строки запроса
+
+<details>
+<summary>Подсказка</summary>
+
+Каждый метод возвращает `self` (fluent interface). В `build()` собираете итоговую строку из накопленных частей.
+
+</details>
+
+<details>
+<summary>Решение</summary>
+
+```python
+class QueryBuilder:
+    def __init__(self) -> None:
+        self._columns: list[str] = ["*"]
+        self._table: str = ""
+        self._conditions: list[str] = []
+        self._order: str = ""
+        self._limit: int | None = None
+
+    def select(self, *columns: str) -> "QueryBuilder":
+        self._columns = list(columns) if columns else ["*"]
+        return self
+
+    def from_table(self, table: str) -> "QueryBuilder":
+        self._table = table
+        return self
+
+    def where(self, condition: str) -> "QueryBuilder":
+        self._conditions.append(condition)
+        return self
+
+    def order_by(self, column: str, desc: bool = False) -> "QueryBuilder":
+        direction = "DESC" if desc else "ASC"
+        self._order = f"{column} {direction}"
+        return self
+
+    def limit(self, n: int) -> "QueryBuilder":
+        self._limit = n
+        return self
+
+    def build(self) -> str:
+        if not self._table:
+            raise ValueError("Table is required")
+
+        query = f"SELECT {', '.join(self._columns)} FROM {self._table}"
+
+        if self._conditions:
+            query += " WHERE " + " AND ".join(self._conditions)
+
+        if self._order:
+            query += f" ORDER BY {self._order}"
+
+        if self._limit is not None:
+            query += f" LIMIT {self._limit}"
+
+        return query
+
+
+# Использование
+query = (
+    QueryBuilder()
+    .select("name", "email", "age")
+    .from_table("users")
+    .where("age > 18")
+    .where("active = 1")
+    .order_by("name")
+    .limit(10)
+    .build()
+)
+print(query)
+# SELECT name, email, age FROM users WHERE age > 18 AND active = 1 ORDER BY name ASC LIMIT 10
+```
+
+</details>
+
+### Задание Д.2: Decorator
+
+Создайте систему декораторов для текстового сообщения:
+- `SimpleMessage` — базовое сообщение с текстом
+- `TimestampDecorator` — добавляет временную метку перед текстом
+- `UpperCaseDecorator` — преобразует весь текст в верхний регистр
+- `BorderDecorator` — оборачивает текст в рамку из символов `*`
+
+Декораторы должны комбинироваться в любом порядке.
+
+<details>
+<summary>Подсказка</summary>
+
+Создайте абстрактный `Message` с методом `get_text() -> str`. Каждый декоратор принимает `Message` и добавляет свою трансформацию.
+
+</details>
+
+<details>
+<summary>Решение</summary>
+
+```python
+from abc import ABC, abstractmethod
+from datetime import datetime
+
+
+class Message(ABC):
+    @abstractmethod
+    def get_text(self) -> str:
+        pass
+
+
+class SimpleMessage(Message):
+    def __init__(self, text: str) -> None:
+        self._text = text
+
+    def get_text(self) -> str:
+        return self._text
+
+
+class MessageDecorator(Message):
+    def __init__(self, message: Message) -> None:
+        self._message = message
+
+    def get_text(self) -> str:
+        return self._message.get_text()
+
+
+class TimestampDecorator(MessageDecorator):
+    def get_text(self) -> str:
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        return f"[{timestamp}] {self._message.get_text()}"
+
+
+class UpperCaseDecorator(MessageDecorator):
+    def get_text(self) -> str:
+        return self._message.get_text().upper()
+
+
+class BorderDecorator(MessageDecorator):
+    def get_text(self) -> str:
+        text = self._message.get_text()
+        border = "*" * (len(text) + 4)
+        return f"{border}\n* {text} *\n{border}"
+
+
+# Использование — декораторы комбинируются
+msg = SimpleMessage("Hello, World!")
+print(msg.get_text())
+# Hello, World!
+
+msg2 = TimestampDecorator(UpperCaseDecorator(SimpleMessage("Hello")))
+print(msg2.get_text())
+# [14:30:00] HELLO
+
+msg3 = BorderDecorator(TimestampDecorator(SimpleMessage("Important")))
+print(msg3.get_text())
+# ********************************
+# * [14:30:00] Important *
+# ********************************
+```
+
+</details>
+
+### Задание Д.3: Strategy
+
+Создайте систему расчёта стоимости доставки с разными стратегиями:
+- `StandardDelivery` — фиксированная стоимость 300 руб.
+- `ExpressDelivery` — 500 руб. + 50 руб. за каждый кг свыше 5 кг
+- `FreeDelivery` — бесплатно при сумме заказа > 5000 руб., иначе 300 руб.
+
+Класс `Order` должен позволять менять стратегию доставки.
+
+<details>
+<summary>Подсказка</summary>
+
+Абстрактная стратегия `DeliveryStrategy` с методом `calculate(weight_kg: float, order_total: float) -> float`. `Order` хранит ссылку на текущую стратегию.
+
+</details>
+
+<details>
+<summary>Решение</summary>
+
+```python
+from abc import ABC, abstractmethod
+
+
+class DeliveryStrategy(ABC):
+    @abstractmethod
+    def calculate(self, weight_kg: float, order_total: float) -> float:
+        pass
+
+
+class StandardDelivery(DeliveryStrategy):
+    def calculate(self, weight_kg: float, order_total: float) -> float:
+        return 300.0
+
+
+class ExpressDelivery(DeliveryStrategy):
+    def calculate(self, weight_kg: float, order_total: float) -> float:
+        base = 500.0
+        if weight_kg > 5:
+            base += (weight_kg - 5) * 50
+        return base
+
+
+class FreeDelivery(DeliveryStrategy):
+    def calculate(self, weight_kg: float, order_total: float) -> float:
+        return 0.0 if order_total > 5000 else 300.0
+
+
+class Order:
+    def __init__(self, total: float, weight_kg: float) -> None:
+        self.total = total
+        self.weight_kg = weight_kg
+        self._delivery: DeliveryStrategy | None = None
+
+    def set_delivery(self, strategy: DeliveryStrategy) -> None:
+        self._delivery = strategy
+
+    def delivery_cost(self) -> float:
+        if not self._delivery:
+            raise ValueError("No delivery strategy set")
+        return self._delivery.calculate(self.weight_kg, self.total)
+
+
+# Использование
+order = Order(total=6000, weight_kg=8)
+
+order.set_delivery(StandardDelivery())
+print(f"Standard: {order.delivery_cost()} RUB")  # 300.0
+
+order.set_delivery(ExpressDelivery())
+print(f"Express: {order.delivery_cost()} RUB")  # 650.0
+
+order.set_delivery(FreeDelivery())
+print(f"Free: {order.delivery_cost()} RUB")  # 0.0 (total > 5000)
+```
+
+</details>
+
+### Задание Д.4: Observer
+
+Создайте систему мониторинга погоды:
+- `WeatherStation` — субъект, у которого меняется температура
+- `PhoneDisplay` — наблюдатель, выводит температуру на экран телефона
+- `WebDashboard` — наблюдатель, обновляет веб-панель
+- `AlertSystem` — наблюдатель, отправляет предупреждение если температура < 0
+
+<details>
+<summary>Подсказка</summary>
+
+`WeatherStation` наследует от `Subject`, при `set_temperature` вызывает `notify`. Каждый наблюдатель реагирует по-своему.
+
+</details>
+
+<details>
+<summary>Решение</summary>
+
+```python
+from abc import ABC, abstractmethod
+
+
+class Observer(ABC):
+    @abstractmethod
+    def update(self, temperature: float) -> None:
+        pass
+
+
+class WeatherStation:
+    def __init__(self) -> None:
+        self._observers: list[Observer] = []
+        self._temperature: float = 0.0
+
+    def subscribe(self, observer: Observer) -> None:
+        self._observers.append(observer)
+
+    def unsubscribe(self, observer: Observer) -> None:
+        self._observers.remove(observer)
+
+    def set_temperature(self, temp: float) -> None:
+        print(f"\nWeatherStation: temperature = {temp}°C")
+        self._temperature = temp
+        for observer in self._observers:
+            observer.update(temp)
+
+
+class PhoneDisplay(Observer):
+    def update(self, temperature: float) -> None:
+        print(f"  Phone: {temperature}°C")
+
+
+class WebDashboard(Observer):
+    def update(self, temperature: float) -> None:
+        print(f"  Dashboard updated: {temperature}°C")
+
+
+class AlertSystem(Observer):
+    def update(self, temperature: float) -> None:
+        if temperature < 0:
+            print(f"  ALERT: Freezing temperature! ({temperature}°C)")
+
+
+# Использование
+station = WeatherStation()
+station.subscribe(PhoneDisplay())
+station.subscribe(WebDashboard())
+station.subscribe(AlertSystem())
+
+station.set_temperature(25)   # Без алерта
+station.set_temperature(-5)   # С алертом
+```
+
+</details>
+
+### Задание Д.5: Рефакторинг с применением SOLID и паттернов
+
+Отрефакторите следующий код, используя принципы SOLID и подходящие паттерны:
 
 ```python
 class OrderProcessor:
     def __init__(self):
-        self.db_connection = MySQLConnection()  # Жёсткая зависимость
-    
+        self.db_connection = MySQLConnection()
+
     def process_order(self, order_data: dict) -> bool:
         # Валидация
         if not order_data.get("items"):
@@ -19,12 +878,12 @@ class OrderProcessor:
         if not order_data.get("customer_email"):
             print("Validation error: No email")
             return False
-        
+
         # Сохранение в БД
         self.db_connection.execute(
             f"INSERT INTO orders VALUES ({order_data})"
         )
-        
+
         # Отправка email
         import smtplib
         server = smtplib.SMTP("smtp.gmail.com", 587)
@@ -33,19 +892,20 @@ class OrderProcessor:
             order_data["customer_email"],
             f"Order confirmed: {order_data}"
         )
-        
+
         # Логирование
         with open("orders.log", "a") as f:
             f.write(f"Order processed: {order_data}\n")
-        
+
         return True
 ```
 
-### Требования
+<details>
+<summary>Подсказка</summary>
 
-1. Разделите класс на несколько классов с единственной ответственностью
-2. Используйте абстракции (ABC) для зависимостей
-3. Примените Dependency Injection
+Этот класс нарушает SRP (4 ответственности) и DIP (жёсткая зависимость от MySQL). Разделите на несколько классов с абстракциями и используйте Dependency Injection.
+
+</details>
 
 <details>
 <summary>Решение</summary>
@@ -55,7 +915,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 
-# Модель данных
 @dataclass
 class Order:
     items: list[str]
@@ -63,7 +922,6 @@ class Order:
     total: float
 
 
-# Абстракции
 class OrderValidator(ABC):
     @abstractmethod
     def validate(self, order: Order) -> tuple[bool, str]:
@@ -89,51 +947,44 @@ class Logger(ABC):
 
 
 # Реализации
-class BasicOrderValidator(OrderValidator):
+class BasicValidator(OrderValidator):
     def validate(self, order: Order) -> tuple[bool, str]:
         if not order.items:
-            return False, "No items in order"
-        if not order.customer_email:
-            return False, "No customer email"
-        if "@" not in order.customer_email:
-            return False, "Invalid email format"
+            return False, "No items"
+        if not order.customer_email or "@" not in order.customer_email:
+            return False, "Invalid email"
         return True, "OK"
 
 
 class SQLOrderRepository(OrderRepository):
     def __init__(self, connection) -> None:
         self.connection = connection
-    
+
     def save(self, order: Order) -> int:
-        # Безопасное сохранение с параметризованными запросами
+        # Параметризованный запрос!
         cursor = self.connection.cursor()
         cursor.execute(
             "INSERT INTO orders (items, email, total) VALUES (?, ?, ?)",
-            (str(order.items), order.customer_email, order.total)
+            (str(order.items), order.customer_email, order.total),
         )
         return cursor.lastrowid
 
 
-class EmailNotificationService(NotificationService):
-    def __init__(self, smtp_host: str, smtp_port: int) -> None:
-        self.smtp_host = smtp_host
-        self.smtp_port = smtp_port
-    
+class EmailNotification(NotificationService):
     def send_confirmation(self, order: Order) -> None:
-        print(f"Sending email to {order.customer_email}")
-        # Реальная отправка email
+        print(f"Email to {order.customer_email}: order confirmed")
 
 
 class FileLogger(Logger):
     def __init__(self, filepath: str) -> None:
         self.filepath = filepath
-    
+
     def log(self, message: str) -> None:
         with open(self.filepath, "a") as f:
             f.write(f"{message}\n")
 
 
-# Координатор (использует DIP)
+# Координатор — зависит от абстракций (DIP)
 class OrderProcessor:
     def __init__(
         self,
@@ -146,1044 +997,20 @@ class OrderProcessor:
         self.repository = repository
         self.notification = notification
         self.logger = logger
-    
+
     def process(self, order: Order) -> tuple[bool, str]:
-        # Валидация
         is_valid, message = self.validator.validate(order)
         if not is_valid:
             self.logger.log(f"Validation failed: {message}")
             return False, message
-        
-        # Сохранение
+
         order_id = self.repository.save(order)
-        
-        # Уведомление
         self.notification.send_confirmation(order)
-        
-        # Логирование
-        self.logger.log(f"Order {order_id} processed successfully")
-        
+        self.logger.log(f"Order {order_id} processed")
         return True, f"Order {order_id} created"
-
-
-# Использование
-if __name__ == "__main__":
-    # Легко подменить реализации для тестирования
-    processor = OrderProcessor(
-        validator=BasicOrderValidator(),
-        repository=SQLOrderRepository(connection=None),  # Mock
-        notification=EmailNotificationService("smtp.example.com", 587),
-        logger=FileLogger("orders.log"),
-    )
-    
-    order = Order(
-        items=["Laptop", "Mouse"],
-        customer_email="user@example.com",
-        total=90000.0,
-    )
-    
-    success, message = processor.process(order)
-    print(f"Result: {success}, {message}")
 ```
 
 </details>
-
----
-
-## Задание 2: Паттерн Factory Method
-
-### Условие
-
-Создайте систему для генерации отчётов в разных форматах (PDF, Excel, HTML).
-
-### Требования
-
-1. Используйте паттерн Factory Method
-2. Реализуйте минимум 3 типа отчётов
-3. Добавьте возможность регистрации новых типов отчётов
-
-<details>
-<summary>Решение</summary>
-
-```python
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
-
-
-@dataclass
-class ReportData:
-    title: str
-    headers: list[str]
-    rows: list[list[str]]
-
-
-class Report(ABC):
-    @abstractmethod
-    def generate(self, data: ReportData) -> str:
-        pass
-    
-    @abstractmethod
-    def get_extension(self) -> str:
-        pass
-
-
-class PDFReport(Report):
-    def generate(self, data: ReportData) -> str:
-        content = f"=== PDF: {data.title} ===\n"
-        content += " | ".join(data.headers) + "\n"
-        content += "-" * 40 + "\n"
-        for row in data.rows:
-            content += " | ".join(row) + "\n"
-        return content
-    
-    def get_extension(self) -> str:
-        return "pdf"
-
-
-class ExcelReport(Report):
-    def generate(self, data: ReportData) -> str:
-        content = f"Excel Workbook: {data.title}\n"
-        content += f"Sheet1: {','.join(data.headers)}\n"
-        for i, row in enumerate(data.rows, 1):
-            content += f"Row {i}: {','.join(row)}\n"
-        return content
-    
-    def get_extension(self) -> str:
-        return "xlsx"
-
-
-class HTMLReport(Report):
-    def generate(self, data: ReportData) -> str:
-        html = f"<html><head><title>{data.title}</title></head><body>\n"
-        html += f"<h1>{data.title}</h1>\n<table border='1'>\n"
-        html += "<tr>" + "".join(f"<th>{h}</th>" for h in data.headers) + "</tr>\n"
-        for row in data.rows:
-            html += "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>\n"
-        html += "</table></body></html>"
-        return html
-    
-    def get_extension(self) -> str:
-        return "html"
-
-
-class ReportFactory:
-    _report_types: dict[str, type[Report]] = {
-        "pdf": PDFReport,
-        "excel": ExcelReport,
-        "html": HTMLReport,
-    }
-    
-    @classmethod
-    def register(cls, name: str, report_class: type[Report]) -> None:
-        cls._report_types[name.lower()] = report_class
-    
-    @classmethod
-    def create(cls, report_type: str) -> Report:
-        report_type = report_type.lower()
-        if report_type not in cls._report_types:
-            available = ", ".join(cls._report_types.keys())
-            raise ValueError(f"Unknown type: {report_type}. Available: {available}")
-        return cls._report_types[report_type]()
-    
-    @classmethod
-    def available_types(cls) -> list[str]:
-        return list(cls._report_types.keys())
-
-
-# Использование
-if __name__ == "__main__":
-    data = ReportData(
-        title="Sales Report Q4 2024",
-        headers=["Product", "Quantity", "Revenue"],
-        rows=[
-            ["Laptop", "150", "$225,000"],
-            ["Phone", "500", "$350,000"],
-            ["Tablet", "200", "$100,000"],
-        ],
-    )
-    
-    for report_type in ReportFactory.available_types():
-        report = ReportFactory.create(report_type)
-        print(f"\n--- {report_type.upper()} Report ---")
-        print(report.generate(data))
-```
-
-</details>
-
----
-
-## Задание 3: Паттерн Builder
-
-### Условие
-
-Создайте Builder для конфигурации HTTP-запроса с поддержкой:
-- URL, метода (GET, POST, PUT, DELETE)
-- Заголовков (headers)
-- Query-параметров
-- Body (для POST/PUT)
-- Timeout
-
-### Требования
-
-1. Fluent interface (цепочка вызовов)
-2. Валидация при build()
-3. Создайте Director с предустановленными конфигурациями
-
-<details>
-<summary>Решение</summary>
-
-```python
-from dataclasses import dataclass, field
-from enum import Enum
-
-
-class HTTPMethod(Enum):
-    GET = "GET"
-    POST = "POST"
-    PUT = "PUT"
-    DELETE = "DELETE"
-    PATCH = "PATCH"
-
-
-@dataclass
-class HTTPRequest:
-    url: str
-    method: HTTPMethod
-    headers: dict[str, str] = field(default_factory=dict)
-    params: dict[str, str] = field(default_factory=dict)
-    body: str | dict | None = None
-    timeout: int = 30
-    
-    def __str__(self) -> str:
-        lines = [
-            f"{self.method.value} {self.url}",
-            f"Headers: {self.headers}",
-            f"Params: {self.params}",
-            f"Body: {self.body}",
-            f"Timeout: {self.timeout}s",
-        ]
-        return "\n".join(lines)
-
-
-class HTTPRequestBuilder:
-    def __init__(self) -> None:
-        self.reset()
-    
-    def reset(self) -> "HTTPRequestBuilder":
-        self._url: str = ""
-        self._method: HTTPMethod = HTTPMethod.GET
-        self._headers: dict[str, str] = {}
-        self._params: dict[str, str] = {}
-        self._body: str | dict | None = None
-        self._timeout: int = 30
-        return self
-    
-    def url(self, url: str) -> "HTTPRequestBuilder":
-        self._url = url
-        return self
-    
-    def method(self, method: HTTPMethod) -> "HTTPRequestBuilder":
-        self._method = method
-        return self
-    
-    def get(self, url: str) -> "HTTPRequestBuilder":
-        return self.url(url).method(HTTPMethod.GET)
-    
-    def post(self, url: str) -> "HTTPRequestBuilder":
-        return self.url(url).method(HTTPMethod.POST)
-    
-    def put(self, url: str) -> "HTTPRequestBuilder":
-        return self.url(url).method(HTTPMethod.PUT)
-    
-    def delete(self, url: str) -> "HTTPRequestBuilder":
-        return self.url(url).method(HTTPMethod.DELETE)
-    
-    def header(self, key: str, value: str) -> "HTTPRequestBuilder":
-        self._headers[key] = value
-        return self
-    
-    def headers(self, headers: dict[str, str]) -> "HTTPRequestBuilder":
-        self._headers.update(headers)
-        return self
-    
-    def param(self, key: str, value: str) -> "HTTPRequestBuilder":
-        self._params[key] = value
-        return self
-    
-    def params(self, params: dict[str, str]) -> "HTTPRequestBuilder":
-        self._params.update(params)
-        return self
-    
-    def body(self, body: str | dict) -> "HTTPRequestBuilder":
-        self._body = body
-        return self
-    
-    def json(self, data: dict) -> "HTTPRequestBuilder":
-        self._body = data
-        self._headers["Content-Type"] = "application/json"
-        return self
-    
-    def timeout(self, seconds: int) -> "HTTPRequestBuilder":
-        self._timeout = seconds
-        return self
-    
-    def auth_bearer(self, token: str) -> "HTTPRequestBuilder":
-        self._headers["Authorization"] = f"Bearer {token}"
-        return self
-    
-    def build(self) -> HTTPRequest:
-        # Валидация
-        if not self._url:
-            raise ValueError("URL is required")
-        
-        if self._method in (HTTPMethod.POST, HTTPMethod.PUT) and self._body is None:
-            raise ValueError(f"{self._method.value} requests should have a body")
-        
-        if self._method == HTTPMethod.GET and self._body is not None:
-            raise ValueError("GET requests should not have a body")
-        
-        request = HTTPRequest(
-            url=self._url,
-            method=self._method,
-            headers=self._headers.copy(),
-            params=self._params.copy(),
-            body=self._body,
-            timeout=self._timeout,
-        )
-        self.reset()
-        return request
-
-
-class HTTPRequestDirector:
-    def __init__(self, builder: HTTPRequestBuilder) -> None:
-        self._builder = builder
-    
-    def api_get(self, url: str, token: str) -> HTTPRequest:
-        """Стандартный GET-запрос к API."""
-        return (
-            self._builder.reset()
-            .get(url)
-            .header("Accept", "application/json")
-            .auth_bearer(token)
-            .timeout(10)
-            .build()
-        )
-    
-    def api_post(self, url: str, data: dict, token: str) -> HTTPRequest:
-        """Стандартный POST-запрос к API."""
-        return (
-            self._builder.reset()
-            .post(url)
-            .json(data)
-            .auth_bearer(token)
-            .timeout(30)
-            .build()
-        )
-    
-    def file_upload(self, url: str, token: str) -> HTTPRequest:
-        """Запрос для загрузки файла."""
-        return (
-            self._builder.reset()
-            .post(url)
-            .header("Content-Type", "multipart/form-data")
-            .auth_bearer(token)
-            .timeout(120)
-            .body("file_content_placeholder")
-            .build()
-        )
-
-
-# Использование
-if __name__ == "__main__":
-    builder = HTTPRequestBuilder()
-    director = HTTPRequestDirector(builder)
-    
-    # Использование директора
-    print("=== API GET ===")
-    request = director.api_get("https://api.example.com/users", "my_token")
-    print(request)
-    
-    print("\n=== API POST ===")
-    request = director.api_post(
-        "https://api.example.com/users",
-        {"name": "Alice", "email": "alice@example.com"},
-        "my_token"
-    )
-    print(request)
-    
-    # Ручная сборка
-    print("\n=== Custom Request ===")
-    request = (
-        builder.reset()
-        .put("https://api.example.com/users/123")
-        .json({"name": "Bob"})
-        .header("X-Custom", "value")
-        .param("notify", "true")
-        .auth_bearer("custom_token")
-        .timeout(60)
-        .build()
-    )
-    print(request)
-```
-
-</details>
-
----
-
-## Задание 4: Паттерн Decorator
-
-### Условие
-
-Создайте систему декораторов для текстового сообщения:
-- Шифрование (Base64)
-- Сжатие (имитация)
-- Добавление временной метки
-- Добавление подписи
-
-### Требования
-
-1. Декораторы должны быть комбинируемыми
-2. Порядок декораторов должен влиять на результат
-3. Реализуйте метод для получения описания всех применённых трансформаций
-
-<details>
-<summary>Решение</summary>
-
-```python
-from abc import ABC, abstractmethod
-from base64 import b64encode, b64decode
-from datetime import datetime
-
-
-class Message(ABC):
-    @abstractmethod
-    def get_content(self) -> str:
-        pass
-    
-    @abstractmethod
-    def get_transformations(self) -> list[str]:
-        pass
-
-
-class SimpleMessage(Message):
-    def __init__(self, content: str) -> None:
-        self._content = content
-    
-    def get_content(self) -> str:
-        return self._content
-    
-    def get_transformations(self) -> list[str]:
-        return ["Original"]
-
-
-class MessageDecorator(Message):
-    def __init__(self, message: Message) -> None:
-        self._message = message
-    
-    def get_content(self) -> str:
-        return self._message.get_content()
-    
-    def get_transformations(self) -> list[str]:
-        return self._message.get_transformations()
-
-
-class EncryptionDecorator(MessageDecorator):
-    def get_content(self) -> str:
-        content = self._message.get_content()
-        encoded = b64encode(content.encode()).decode()
-        return encoded
-    
-    def get_transformations(self) -> list[str]:
-        return self._message.get_transformations() + ["Base64 Encrypted"]
-    
-    @staticmethod
-    def decrypt(encoded: str) -> str:
-        return b64decode(encoded.encode()).decode()
-
-
-class CompressionDecorator(MessageDecorator):
-    def get_content(self) -> str:
-        content = self._message.get_content()
-        # Имитация сжатия (в реальности использовался бы zlib)
-        return f"[COMPRESSED:{len(content)}]{content[:20]}..."
-    
-    def get_transformations(self) -> list[str]:
-        return self._message.get_transformations() + ["Compressed"]
-
-
-class TimestampDecorator(MessageDecorator):
-    def get_content(self) -> str:
-        content = self._message.get_content()
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        return f"[{timestamp}] {content}"
-    
-    def get_transformations(self) -> list[str]:
-        return self._message.get_transformations() + ["Timestamped"]
-
-
-class SignatureDecorator(MessageDecorator):
-    def __init__(self, message: Message, signature: str) -> None:
-        super().__init__(message)
-        self._signature = signature
-    
-    def get_content(self) -> str:
-        content = self._message.get_content()
-        return f"{content}\n\n-- {self._signature}"
-    
-    def get_transformations(self) -> list[str]:
-        return self._message.get_transformations() + [f"Signed by '{self._signature}'"]
-
-
-class HTMLFormattingDecorator(MessageDecorator):
-    def get_content(self) -> str:
-        content = self._message.get_content()
-        # Простое HTML-форматирование
-        content = content.replace("\n", "<br>\n")
-        return f"<div class='message'>{content}</div>"
-    
-    def get_transformations(self) -> list[str]:
-        return self._message.get_transformations() + ["HTML Formatted"]
-
-
-# Использование
-if __name__ == "__main__":
-    # Простое сообщение
-    message = SimpleMessage("Hello, World! This is a secret message.")
-    print("=== Original ===")
-    print(f"Content: {message.get_content()}")
-    print(f"Transformations: {message.get_transformations()}")
-    
-    # С временной меткой и подписью
-    print("\n=== Timestamp + Signature ===")
-    decorated = SignatureDecorator(
-        TimestampDecorator(message),
-        "John Doe"
-    )
-    print(f"Content:\n{decorated.get_content()}")
-    print(f"Transformations: {decorated.get_transformations()}")
-    
-    # Шифрование
-    print("\n=== Encrypted ===")
-    encrypted = EncryptionDecorator(message)
-    print(f"Content: {encrypted.get_content()}")
-    print(f"Decrypted: {EncryptionDecorator.decrypt(encrypted.get_content())}")
-    
-    # Комбинация: подпись -> метка -> шифрование
-    print("\n=== Full Pipeline ===")
-    full = EncryptionDecorator(
-        TimestampDecorator(
-            SignatureDecorator(message, "Alice")
-        )
-    )
-    print(f"Content: {full.get_content()}")
-    print(f"Transformations: {' -> '.join(full.get_transformations())}")
-    
-    # Порядок важен: шифрование -> подпись -> метка
-    print("\n=== Different Order ===")
-    different_order = TimestampDecorator(
-        SignatureDecorator(
-            EncryptionDecorator(message),
-            "Bob"
-        )
-    )
-    print(f"Content:\n{different_order.get_content()}")
-    print(f"Transformations: {' -> '.join(different_order.get_transformations())}")
-```
-
-</details>
-
----
-
-## Задание 5: Паттерн Observer
-
-### Условие
-
-Создайте систему мониторинга сервера с разными типами уведомлений:
-- Email-уведомления
-- SMS-уведомления
-- Slack-уведомления
-- Запись в лог
-
-### Требования
-
-1. Сервер может отправлять разные типы событий (CPU high, Memory high, Disk full, Service down)
-2. Каждый подписчик может фильтровать события по типу
-3. Добавьте приоритеты событий (info, warning, critical)
-
-<details>
-<summary>Решение</summary>
-
-```python
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from datetime import datetime
-from enum import Enum
-
-
-class EventPriority(Enum):
-    INFO = 1
-    WARNING = 2
-    CRITICAL = 3
-
-
-class EventType(Enum):
-    CPU_HIGH = "cpu_high"
-    MEMORY_HIGH = "memory_high"
-    DISK_FULL = "disk_full"
-    SERVICE_DOWN = "service_down"
-    SERVICE_UP = "service_up"
-
-
-@dataclass
-class ServerEvent:
-    event_type: EventType
-    priority: EventPriority
-    message: str
-    timestamp: datetime = None
-    
-    def __post_init__(self):
-        if self.timestamp is None:
-            self.timestamp = datetime.now()
-    
-    def __str__(self) -> str:
-        return f"[{self.priority.name}] {self.event_type.value}: {self.message}"
-
-
-class AlertSubscriber(ABC):
-    def __init__(
-        self,
-        event_types: list[EventType] | None = None,
-        min_priority: EventPriority = EventPriority.INFO,
-    ) -> None:
-        self.event_types = event_types  # None = все типы
-        self.min_priority = min_priority
-    
-    def should_handle(self, event: ServerEvent) -> bool:
-        # Проверка приоритета
-        if event.priority.value < self.min_priority.value:
-            return False
-        # Проверка типа события
-        if self.event_types is not None and event.event_type not in self.event_types:
-            return False
-        return True
-    
-    @abstractmethod
-    def handle(self, event: ServerEvent) -> None:
-        pass
-
-
-class EmailAlert(AlertSubscriber):
-    def __init__(
-        self,
-        email: str,
-        event_types: list[EventType] | None = None,
-        min_priority: EventPriority = EventPriority.WARNING,
-    ) -> None:
-        super().__init__(event_types, min_priority)
-        self.email = email
-    
-    def handle(self, event: ServerEvent) -> None:
-        if not self.should_handle(event):
-            return
-        print(f"  📧 Email to {self.email}: {event}")
-
-
-class SMSAlert(AlertSubscriber):
-    def __init__(
-        self,
-        phone: str,
-        event_types: list[EventType] | None = None,
-        min_priority: EventPriority = EventPriority.CRITICAL,
-    ) -> None:
-        super().__init__(event_types, min_priority)
-        self.phone = phone
-    
-    def handle(self, event: ServerEvent) -> None:
-        if not self.should_handle(event):
-            return
-        print(f"  📱 SMS to {self.phone}: {event}")
-
-
-class SlackAlert(AlertSubscriber):
-    def __init__(
-        self,
-        channel: str,
-        event_types: list[EventType] | None = None,
-        min_priority: EventPriority = EventPriority.INFO,
-    ) -> None:
-        super().__init__(event_types, min_priority)
-        self.channel = channel
-    
-    def handle(self, event: ServerEvent) -> None:
-        if not self.should_handle(event):
-            return
-        emoji = {"INFO": "ℹ️", "WARNING": "⚠️", "CRITICAL": "🚨"}
-        print(f"  💬 Slack #{self.channel}: {emoji[event.priority.name]} {event}")
-
-
-class LogAlert(AlertSubscriber):
-    def __init__(
-        self,
-        filepath: str,
-        event_types: list[EventType] | None = None,
-        min_priority: EventPriority = EventPriority.INFO,
-    ) -> None:
-        super().__init__(event_types, min_priority)
-        self.filepath = filepath
-    
-    def handle(self, event: ServerEvent) -> None:
-        if not self.should_handle(event):
-            return
-        print(f"  📝 Log to {self.filepath}: {event.timestamp} - {event}")
-
-
-class ServerMonitor:
-    def __init__(self, server_name: str) -> None:
-        self.server_name = server_name
-        self._subscribers: list[AlertSubscriber] = []
-    
-    def subscribe(self, subscriber: AlertSubscriber) -> None:
-        self._subscribers.append(subscriber)
-    
-    def unsubscribe(self, subscriber: AlertSubscriber) -> None:
-        self._subscribers.remove(subscriber)
-    
-    def emit(self, event: ServerEvent) -> None:
-        print(f"\n[{self.server_name}] Event: {event}")
-        for subscriber in self._subscribers:
-            subscriber.handle(event)
-
-
-# Использование
-if __name__ == "__main__":
-    # Создаём монитор сервера
-    monitor = ServerMonitor("production-server-01")
-    
-    # Подписываем различные алерты
-    monitor.subscribe(EmailAlert(
-        "admin@example.com",
-        min_priority=EventPriority.WARNING
-    ))
-    
-    monitor.subscribe(SMSAlert(
-        "+7-999-123-4567",
-        event_types=[EventType.SERVICE_DOWN],
-        min_priority=EventPriority.CRITICAL
-    ))
-    
-    monitor.subscribe(SlackAlert(
-        "ops-alerts",
-        min_priority=EventPriority.INFO
-    ))
-    
-    monitor.subscribe(LogAlert(
-        "/var/log/server.log",
-        min_priority=EventPriority.INFO
-    ))
-    
-    # Эмитим события
-    print("=== Server Monitoring Events ===")
-    
-    monitor.emit(ServerEvent(
-        EventType.CPU_HIGH,
-        EventPriority.INFO,
-        "CPU usage at 75%"
-    ))
-    
-    monitor.emit(ServerEvent(
-        EventType.MEMORY_HIGH,
-        EventPriority.WARNING,
-        "Memory usage at 90%"
-    ))
-    
-    monitor.emit(ServerEvent(
-        EventType.SERVICE_DOWN,
-        EventPriority.CRITICAL,
-        "Database service is not responding"
-    ))
-    
-    monitor.emit(ServerEvent(
-        EventType.SERVICE_UP,
-        EventPriority.INFO,
-        "Database service restored"
-    ))
-```
-
-</details>
-
----
-
-## Задание 6: Паттерн Strategy + Command
-
-### Условие
-
-Создайте систему обработки изображений с:
-- Разными стратегиями изменения размера (crop, fit, stretch)
-- Разными стратегиями фильтров (grayscale, blur, sharpen)
-- Поддержкой undo/redo операций
-
-### Требования
-
-1. Комбинируйте паттерны Strategy и Command
-2. Сохраняйте историю операций
-3. Позвольте применять несколько операций последовательно
-
-<details>
-<summary>Решение</summary>
-
-```python
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from copy import deepcopy
-
-
-@dataclass
-class Image:
-    name: str
-    width: int
-    height: int
-    filters: list[str] = field(default_factory=list)
-    
-    def __str__(self) -> str:
-        filters_str = ", ".join(self.filters) if self.filters else "none"
-        return f"Image '{self.name}' ({self.width}x{self.height}), filters: [{filters_str}]"
-    
-    def copy(self) -> "Image":
-        return deepcopy(self)
-
-
-# === Strategies ===
-
-class ResizeStrategy(ABC):
-    @abstractmethod
-    def resize(self, image: Image, target_width: int, target_height: int) -> None:
-        pass
-    
-    @abstractmethod
-    def name(self) -> str:
-        pass
-
-
-class CropStrategy(ResizeStrategy):
-    def resize(self, image: Image, target_width: int, target_height: int) -> None:
-        image.width = min(image.width, target_width)
-        image.height = min(image.height, target_height)
-    
-    def name(self) -> str:
-        return "crop"
-
-
-class FitStrategy(ResizeStrategy):
-    def resize(self, image: Image, target_width: int, target_height: int) -> None:
-        ratio = min(target_width / image.width, target_height / image.height)
-        image.width = int(image.width * ratio)
-        image.height = int(image.height * ratio)
-    
-    def name(self) -> str:
-        return "fit"
-
-
-class StretchStrategy(ResizeStrategy):
-    def resize(self, image: Image, target_width: int, target_height: int) -> None:
-        image.width = target_width
-        image.height = target_height
-    
-    def name(self) -> str:
-        return "stretch"
-
-
-class FilterStrategy(ABC):
-    @abstractmethod
-    def apply(self, image: Image) -> None:
-        pass
-    
-    @abstractmethod
-    def name(self) -> str:
-        pass
-
-
-class GrayscaleFilter(FilterStrategy):
-    def apply(self, image: Image) -> None:
-        if "grayscale" not in image.filters:
-            image.filters.append("grayscale")
-    
-    def name(self) -> str:
-        return "grayscale"
-
-
-class BlurFilter(FilterStrategy):
-    def __init__(self, radius: int = 5) -> None:
-        self.radius = radius
-    
-    def apply(self, image: Image) -> None:
-        image.filters.append(f"blur({self.radius})")
-    
-    def name(self) -> str:
-        return f"blur({self.radius})"
-
-
-class SharpenFilter(FilterStrategy):
-    def apply(self, image: Image) -> None:
-        image.filters.append("sharpen")
-    
-    def name(self) -> str:
-        return "sharpen"
-
-
-# === Commands ===
-
-class ImageCommand(ABC):
-    @abstractmethod
-    def execute(self) -> str:
-        pass
-    
-    @abstractmethod
-    def undo(self) -> str:
-        pass
-
-
-class ResizeCommand(ImageCommand):
-    def __init__(
-        self,
-        image: Image,
-        strategy: ResizeStrategy,
-        target_width: int,
-        target_height: int,
-    ) -> None:
-        self._image = image
-        self._strategy = strategy
-        self._target_width = target_width
-        self._target_height = target_height
-        self._previous_state: Image | None = None
-    
-    def execute(self) -> str:
-        self._previous_state = self._image.copy()
-        self._strategy.resize(self._image, self._target_width, self._target_height)
-        return f"Resized using '{self._strategy.name()}' to {self._image.width}x{self._image.height}"
-    
-    def undo(self) -> str:
-        if self._previous_state:
-            self._image.width = self._previous_state.width
-            self._image.height = self._previous_state.height
-            return f"Undid resize, restored to {self._image.width}x{self._image.height}"
-        return "Nothing to undo"
-
-
-class FilterCommand(ImageCommand):
-    def __init__(self, image: Image, strategy: FilterStrategy) -> None:
-        self._image = image
-        self._strategy = strategy
-        self._previous_filters: list[str] = []
-    
-    def execute(self) -> str:
-        self._previous_filters = self._image.filters.copy()
-        self._strategy.apply(self._image)
-        return f"Applied filter '{self._strategy.name()}'"
-    
-    def undo(self) -> str:
-        self._image.filters = self._previous_filters
-        return f"Undid filter '{self._strategy.name()}'"
-
-
-class ImageEditor:
-    def __init__(self) -> None:
-        self._history: list[ImageCommand] = []
-        self._redo_stack: list[ImageCommand] = []
-    
-    def execute(self, command: ImageCommand) -> str:
-        result = command.execute()
-        self._history.append(command)
-        self._redo_stack.clear()
-        return result
-    
-    def undo(self) -> str:
-        if not self._history:
-            return "Nothing to undo"
-        command = self._history.pop()
-        self._redo_stack.append(command)
-        return command.undo()
-    
-    def redo(self) -> str:
-        if not self._redo_stack:
-            return "Nothing to redo"
-        command = self._redo_stack.pop()
-        self._history.append(command)
-        return command.execute()
-    
-    def history_count(self) -> int:
-        return len(self._history)
-
-
-# Использование
-if __name__ == "__main__":
-    image = Image("photo.jpg", 1920, 1080)
-    editor = ImageEditor()
-    
-    print("=== Image Processing with Strategy + Command ===\n")
-    print(f"Initial: {image}")
-    
-    # Применяем операции
-    print(f"\n{editor.execute(ResizeCommand(image, FitStrategy(), 800, 600))}")
-    print(f"Current: {image}")
-    
-    print(f"\n{editor.execute(FilterCommand(image, GrayscaleFilter()))}")
-    print(f"Current: {image}")
-    
-    print(f"\n{editor.execute(FilterCommand(image, BlurFilter(10)))}")
-    print(f"Current: {image}")
-    
-    print(f"\n{editor.execute(FilterCommand(image, SharpenFilter()))}")
-    print(f"Current: {image}")
-    
-    # Undo
-    print(f"\n{editor.undo()}")
-    print(f"Current: {image}")
-    
-    print(f"\n{editor.undo()}")
-    print(f"Current: {image}")
-    
-    # Redo
-    print(f"\n{editor.redo()}")
-    print(f"Current: {image}")
-    
-    # Новая операция (очищает redo stack)
-    print(f"\n{editor.execute(ResizeCommand(image, CropStrategy(), 400, 300))}")
-    print(f"Current: {image}")
-    
-    print(f"\nHistory count: {editor.history_count()}")
-```
-
-</details>
-
----
-
-## Дополнительные задания
-
-### Задание 7 (продвинутое): Паттерн State
-
-Реализуйте конечный автомат для заказа в интернет-магазине:
-- Состояния: Created → Paid → Shipped → Delivered / Cancelled
-- Переходы зависят от текущего состояния
-- Добавьте возврат (Refunded) только для Delivered заказов
-
-### Задание 8 (продвинутое): Комбинация паттернов
-
-Создайте систему логирования, которая использует:
-- **Singleton** для глобального логгера
-- **Factory** для создания разных хендлеров (Console, File, Network)
-- **Decorator** для форматирования сообщений (Timestamp, Level, Color)
-- **Observer** для подписки на события определённого уровня
-
----
-
-## Критерии оценки
-
-| Критерий | Баллы |
-|----------|-------|
-| Корректная реализация паттерна | 40% |
-| Соблюдение SOLID принципов | 20% |
-| Типизация и документация | 20% |
-| Тестируемость кода | 20% |
 
 ---
 
