@@ -14,7 +14,7 @@
 |---|---------|----------|
 | 1 | [ Введение в базы данных. Знакомство с SQL](./seminars/seminar_01_intro_to_sql/) | CREATE, INSERT, UPDATE, DELETE, простые SELECT |
 | 2 | [Проектирование базы данных](./seminars/seminar_02_db_design/) | JOIN, агрегация, GROUP BY, подзапросы, нормализация |
-| 3 | [Паттерны ООП на Python для разработки приложения](./seminars/seminar_03_oop_patterns/) | Singleton, Factory, SOLID |
+| 3 | [Паттерны ООП на Python для разработки приложения](./seminars/seminar_03_oop_patterns/) | SOLID, Python Design Patterns |
 
 ### Модуль 3: Создание Web-сервисов на Python
 
