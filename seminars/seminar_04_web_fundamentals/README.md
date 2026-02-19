@@ -1,4 +1,4 @@
-# Семинар 4: Общее представление о WEB
+# Семинар 4: Основы веба — сетевое взаимодействие и HTTP
 
 **Модуль:** 3 — Создание Web-сервисов на Python  
 **Дата:** 25.02.2026  
@@ -9,110 +9,192 @@
 ## Цели семинара
 
 После этого семинара студенты смогут:
-- Понимать архитектуру клиент-сервер и принципы работы веба
-- Работать с протоколом HTTP: методы, заголовки, коды ответов
-- Формировать URL с параметрами запросов
-- Работать с форматами данных JSON и XML
-- Понимать принципы REST архитектуры
-- Использовать инструменты для тестирования API
+- Объяснять разницу между IP-адресом и портом, понимать их роль в сетевом взаимодействии
+- Описывать структуру HTTP-запроса: стартовая строка, заголовки, тело
+- Различать HTTP-методы и выбирать подходящий для конкретной задачи
+- Использовать библиотеку `requests` для отправки HTTP-запросов
+- Обрабатывать ответы сервера и ошибки соединения
+
+> **Важно:** Настоящее понимание HTTP приходит через практику. Теория — это фундамент, но уверенность появляется только после десятков отправленных запросов. Экспериментируйте!
 
 ---
 
-## План занятия
+## Подготовка
 
-| Время | Тема | Материалы |
-|-------|------|-----------|
-| 10-15 мин | Введение: клиент-сервер, история веба | Презентация |
-| 25 мин | HTTP протокол: методы, заголовки, статусы | `examples/01_http_basics.py` |
-| 20 мин | Форматы данных: JSON и XML | `examples/02_json_xml.py` |
-| 20 мин | Простой HTTP сервер на Python | `examples/03_simple_server.py` |
-| 25 мин | REST API и работа с внешними сервисами | `examples/04_rest_client.py` |
-| 30 мин | Практика | `exercises/web_fundamentals_practice.md` |
+```bash
+# Убедитесь, что виртуальное окружение активировано
+source .venv/bin/activate  # Linux/Mac
+# или
+.venv\Scripts\activate     # Windows
+
+# Установите зависимости (если ещё не установлены)
+uv add requests
+
+# Проверьте, что requests установлен
+python -c "import requests; print(requests.__version__)"
+```
 
 ---
 
-## 1. Архитектура клиент-сервер
+## План семинара
 
-### Основные понятия
+> **Принцип работы:** после каждого блока теории — сразу переходите к практике. Не читайте весь документ целиком!
 
-**Клиент** — программа, которая отправляет запросы (браузер, мобильное приложение, скрипт).
+| Время | Тема | Практика |
+|-------|------|----------|
+| 15 мин | Блок 1: IP-адреса и порты | → Упражнения: Часть 1 |
+| 20 мин | Блок 2: Структура HTTP-запроса | → Упражнения: Часть 2 |
+| 25 мин | Блок 3: Библиотека requests | → Упражнения: Часть 3 |
+| 20 мин | Блок 4: Ситуационные задачи (Chat Polls) | → Упражнения: Часть 4 |
+| 10 мин | Подведение итогов | — |
 
-**Сервер** — программа, которая принимает запросы и отправляет ответы.
+**Итого:** ~90 минут
+
+---
+
+## Блок 1: IP-адреса и порты (15 мин)
+
+### Что такое IP-адрес?
+
+**IP-адрес** (Internet Protocol address) — уникальный числовой идентификатор устройства в сети. Это как почтовый адрес дома.
 
 ```
-┌─────────┐    HTTP Request     ┌─────────┐
-│         │ ─────────────────>  │         │
-│ Client  │                     │ Server  │
-│         │ <─────────────────  │         │
-└─────────┘    HTTP Response    └─────────┘
+IPv4: 192.168.1.100      (4 числа от 0 до 255, разделённые точками)
+IPv6: 2001:0db8:85a3::8a2e:0370:7334  (8 групп по 4 hex-цифры)
 ```
 
-### URL (Uniform Resource Locator)
+**Специальные адреса:**
+- `127.0.0.1` (localhost) — "этот же компьютер"
+- `0.0.0.0` — "все интерфейсы" (для серверов)
+- `192.168.x.x`, `10.x.x.x` — локальные сети
 
-Структура URL:
+### Что такое порт?
+
+**Порт** — числовой идентификатор конкретного приложения на устройстве. Это как номер квартиры в доме.
 
 ```
-https://api.example.com:8080/users/123?active=true&limit=10#section
-└─┬─┘   └──────┬──────┘└─┬─┘└────┬───┘└──────────┬────────┘└───┬──┘
-схема       хост      порт   путь          параметры      якорь
+IP-адрес + Порт = Сокет (полный адрес для соединения)
+Пример: 192.168.1.100:8080
 ```
+
+**Диапазоны портов:**
+
+| Диапазон | Название | Описание |
+|----------|----------|----------|
+| 0–1023 | Well-known | Зарезервированы для системных служб (нужны права root) |
+| 1024–49151 | Registered | Зарегистрированы для приложений |
+| 49152–65535 | Dynamic | Временные, для клиентских соединений |
+
+**Популярные порты:**
+
+| Порт | Протокол/Сервис |
+|------|-----------------|
+| 80 | HTTP |
+| 443 | HTTPS |
+| 22 | SSH |
+| 5432 | PostgreSQL |
+| 3306 | MySQL |
+| 8000, 8080 | Часто используются для разработки |
+
+### Аналогия
+
+```
+Отправить письмо в офис:
+  Город         = IP-адрес (какой компьютер)
+  Улица, дом    = уточнение IP
+  Номер офиса   = Порт (какое приложение на компьютере)
+```
+
+### Пример в Python
 
 ```python
-from urllib.parse import urlparse, parse_qs, urlencode, urljoin
+from urllib.parse import urlparse
 
-# Разбор URL
-url = "https://api.example.com/users?name=John&age=25"
+url = "https://api.example.com:8443/users"
 parsed = urlparse(url)
+
+print(parsed.hostname)  # api.example.com
+print(parsed.port)      # 8443
 print(parsed.scheme)    # https
-print(parsed.netloc)    # api.example.com
-print(parsed.path)      # /users
-print(parsed.query)     # name=John&age=25
-
-# Парсинг параметров
-params = parse_qs(parsed.query)
-print(params)           # {'name': ['John'], 'age': ['25']}
-
-# Создание строки параметров
-query = urlencode({'search': 'python', 'page': 1})
-print(query)            # search=python&page=1
 ```
+
+> **Подробнее:** см. файл [`examples/01_ip_ports.py`](examples/01_ip_ports.py) — работа с URL, получение IP-адреса хоста.
+
+### Практика
+
+Перейдите к файлу [`exercises/web_fundamentals_practice.md`](exercises/web_fundamentals_practice.md) и выполните **Часть 1: IP-адреса и порты** (задания 1.1–1.3).
 
 ---
 
-## 2. Протокол HTTP
+## Блок 2: Структура HTTP-запроса (20 мин)
 
-### HTTP методы
+### Что такое HTTP?
 
-| Метод | Описание | Идемпотентность | Тело запроса |
-|-------|----------|-----------------|--------------|
-| GET | Получить ресурс | Да | Нет |
-| POST | Создать ресурс | Нет | Да |
-| PUT | Заменить ресурс полностью | Да | Да |
-| PATCH | Частично обновить ресурс | Нет | Да |
-| DELETE | Удалить ресурс | Да | Обычно нет |
-| HEAD | Получить только заголовки | Да | Нет |
-| OPTIONS | Получить доступные методы | Да | Нет |
+**HTTP** (HyperText Transfer Protocol) — протокол прикладного уровня для обмена данными в вебе. Работает по принципу "запрос-ответ": клиент отправляет запрос, сервер возвращает ответ.
 
-**Идемпотентность** — многократное выполнение запроса даёт тот же результат, что и однократное.
+### Структура HTTP-запроса
 
-### HTTP заголовки
+HTTP-запрос состоит из трёх частей:
 
-```python
-# Частые заголовки запроса
-headers = {
-    "Content-Type": "application/json",      # Формат тела запроса
-    "Accept": "application/json",            # Ожидаемый формат ответа
-    "Authorization": "Bearer <token>",       # Аутентификация
-    "User-Agent": "MyApp/1.0",              # Информация о клиенте
-    "Accept-Language": "ru-RU,en-US",       # Предпочитаемые языки
-}
+```
+┌─────────────────────────────────────────────────────────┐
+│ 1. Стартовая строка (Request Line)                      │
+│    GET /users?page=1 HTTP/1.1                           │
+│    ^^^  ^^^^^^^^^^^^  ^^^^^^^                           │
+│    метод   путь       версия                            │
+├─────────────────────────────────────────────────────────┤
+│ 2. Заголовки (Headers)                                  │
+│    Host: api.example.com                                │
+│    Content-Type: application/json                       │
+│    Authorization: Bearer token123                       │
+│    User-Agent: MyApp/1.0                                │
+│                                                         │
+├─────────────────────────────────────────────────────────┤
+│ 3. Тело запроса (Body) — опционально                    │
+│    {"name": "Alice", "email": "alice@example.com"}      │
+└─────────────────────────────────────────────────────────┘
+```
 
-# Частые заголовки ответа
-# Content-Type: application/json            # Формат тела ответа
-# Content-Length: 1234                      # Размер тела в байтах
-# Set-Cookie: session=abc123                # Установка cookie
-# Cache-Control: max-age=3600               # Кэширование
-# Location: /new-url                        # Редирект
+### HTTP-методы
+
+| Метод | Назначение | Есть тело? | Идемпотентный? |
+|-------|------------|------------|----------------|
+| GET | Получить данные | Нет | Да |
+| POST | Создать ресурс | Да | Нет |
+| PUT | Заменить ресурс целиком | Да | Да |
+| PATCH | Частично обновить | Да | Нет |
+| DELETE | Удалить ресурс | Обычно нет | Да |
+
+**Идемпотентность** — повторный запрос даёт тот же результат.
+
+### Важные заголовки запроса
+
+| Заголовок | Описание | Пример |
+|-----------|----------|--------|
+| `Host` | Имя сервера | `Host: api.example.com` |
+| `Content-Type` | Формат тела запроса | `Content-Type: application/json` |
+| `Accept` | Ожидаемый формат ответа | `Accept: application/json` |
+| `Authorization` | Данные аутентификации | `Authorization: Bearer abc123` |
+| `User-Agent` | Информация о клиенте | `User-Agent: Mozilla/5.0...` |
+
+### Структура HTTP-ответа
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 1. Строка статуса                                       │
+│    HTTP/1.1 200 OK                                      │
+│    ^^^^^^^  ^^^ ^^                                      │
+│    версия   код описание                                │
+├─────────────────────────────────────────────────────────┤
+│ 2. Заголовки ответа                                     │
+│    Content-Type: application/json                       │
+│    Content-Length: 156                                  │
+│    Date: Tue, 25 Feb 2026 10:00:00 GMT                  │
+│                                                         │
+├─────────────────────────────────────────────────────────┤
+│ 3. Тело ответа                                          │
+│    {"id": 1, "name": "Alice"}                           │
+└─────────────────────────────────────────────────────────┘
 ```
 
 ### Коды ответов HTTP
@@ -121,65 +203,113 @@ headers = {
 |----------|-----------|---------|
 | 1xx | Информационные | 100 Continue |
 | 2xx | Успех | 200 OK, 201 Created, 204 No Content |
-| 3xx | Перенаправление | 301 Moved Permanently, 302 Found, 304 Not Modified |
-| 4xx | Ошибка клиента | 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found |
-| 5xx | Ошибка сервера | 500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable |
+| 3xx | Перенаправление | 301 Moved, 302 Found, 304 Not Modified |
+| 4xx | Ошибка клиента | 400 Bad Request, 401 Unauthorized, 404 Not Found |
+| 5xx | Ошибка сервера | 500 Internal Error, 502 Bad Gateway, 503 Unavailable |
 
-```python
-import requests
+### Пример: сырой HTTP-запрос
 
-response = requests.get("https://httpbin.org/status/404")
-print(response.status_code)     # 404
-print(response.ok)              # False (True для 2xx)
-print(response.reason)          # NOT FOUND
+```http
+POST /api/users HTTP/1.1
+Host: api.example.com
+Content-Type: application/json
+Authorization: Bearer my-secret-token
+Content-Length: 52
+
+{"username": "alice", "email": "alice@example.com"}
 ```
+
+> **Подробнее:** см. файл [`examples/02_http_structure.py`](examples/02_http_structure.py) — визуализация структуры запросов и ответов.
+
+### Практика
+
+Перейдите к файлу [`exercises/web_fundamentals_practice.md`](exercises/web_fundamentals_practice.md) и выполните **Часть 2: Структура HTTP-запроса** (задания 2.1–2.4).
 
 ---
 
-## 3. Библиотека requests
+## Блок 3: Библиотека requests (25 мин)
 
-### Базовое использование
+### Зачем нужна библиотека requests?
+
+Стандартная библиотека `urllib` низкоуровневая и неудобная. `requests` — де-факто стандарт для HTTP в Python: простой, понятный, мощный.
+
+### Установка
+
+```bash
+uv add requests
+# или
+pip install requests
+```
+
+### GET-запрос
 
 ```python
 import requests
 
-# GET запрос
+# Простой GET
 response = requests.get("https://httpbin.org/get")
-print(response.status_code)     # 200
-print(response.headers)         # Заголовки ответа
-print(response.text)            # Тело как строка
-print(response.json())          # Парсинг JSON
+print(response.status_code)  # 200
+print(response.text)         # тело как строка
+print(response.json())       # парсинг JSON
 
-# GET с параметрами
+# GET с параметрами (query string)
 response = requests.get(
     "https://httpbin.org/get",
     params={"name": "Alice", "age": 25}
 )
 # URL станет: https://httpbin.org/get?name=Alice&age=25
+```
 
-# POST с JSON телом
+### POST-запрос
+
+```python
+# POST с JSON-телом
 response = requests.post(
     "https://httpbin.org/post",
     json={"username": "alice", "email": "alice@example.com"}
 )
+# Content-Type автоматически = application/json
 
 # POST с form-data
 response = requests.post(
     "https://httpbin.org/post",
     data={"username": "alice", "password": "secret"}
 )
+# Content-Type автоматически = application/x-www-form-urlencoded
+```
 
-# Кастомные заголовки
+### Кастомные заголовки
+
+```python
+headers = {
+    "Authorization": "Bearer my-token",
+    "User-Agent": "MyApp/1.0",
+    "Accept-Language": "ru-RU"
+}
+response = requests.get("https://httpbin.org/headers", headers=headers)
+```
+
+### Таймауты — обязательны!
+
+```python
+# ВСЕГДА указывайте timeout!
 response = requests.get(
-    "https://httpbin.org/headers",
-    headers={"Authorization": "Bearer my-token"}
+    "https://httpbin.org/get",
+    timeout=10  # секунды
+)
+
+# Раздельные таймауты
+response = requests.get(
+    "https://httpbin.org/get",
+    timeout=(3, 10)  # (connect_timeout, read_timeout)
 )
 ```
+
+**Без таймаута запрос может зависнуть навсегда!**
 
 ### Обработка ошибок
 
 ```python
-import requests
 from requests.exceptions import (
     RequestException,
     ConnectionError,
@@ -188,14 +318,11 @@ from requests.exceptions import (
 )
 
 try:
-    response = requests.get(
-        "https://httpbin.org/delay/5",
-        timeout=3  # Таймаут в секундах
-    )
+    response = requests.get("https://httpbin.org/status/404", timeout=10)
     response.raise_for_status()  # Выбросит HTTPError для 4xx/5xx
-
+    
 except ConnectionError:
-    print("Ошибка подключения")
+    print("Не удалось подключиться к серверу")
 except Timeout:
     print("Превышено время ожидания")
 except HTTPError as e:
@@ -204,265 +331,74 @@ except RequestException as e:
     print(f"Ошибка запроса: {e}")
 ```
 
-### Сессии
+### Объект Response
 
 ```python
-# Сессия сохраняет cookies и настройки между запросами
-with requests.Session() as session:
-    # Установить базовые заголовки для всех запросов
-    session.headers.update({"User-Agent": "MyApp/1.0"})
+response = requests.get("https://httpbin.org/get", timeout=10)
 
-    # Первый запрос — сервер установит cookie
-    session.get("https://httpbin.org/cookies/set/session_id/abc123")
+# Статус
+response.status_code    # 200
+response.ok             # True (для 2xx)
+response.reason         # "OK"
 
-    # Второй запрос — cookie автоматически отправится
-    response = session.get("https://httpbin.org/cookies")
-    print(response.json())  # {'cookies': {'session_id': 'abc123'}}
+# Заголовки ответа
+response.headers        # dict-like объект
+response.headers["Content-Type"]  # "application/json"
+
+# Тело ответа
+response.text           # как строка (декодируется автоматически)
+response.content        # как bytes (сырые данные)
+response.json()         # парсит JSON в dict/list
+
+# Метаданные
+response.url            # финальный URL (после редиректов)
+response.elapsed        # время выполнения запроса
+response.encoding       # кодировка
 ```
+
+> **Подробнее:** см. файл [`examples/03_requests_library.py`](examples/03_requests_library.py) — полные примеры всех типов запросов.
+
+### Практика
+
+Перейдите к файлу [`exercises/web_fundamentals_practice.md`](exercises/web_fundamentals_practice.md) и выполните **Часть 3: Библиотека requests** (задания 3.1–3.5).
 
 ---
 
-## 4. Форматы данных
+## Блок 4: Ситуационные задачи (20 мин)
 
-### JSON (JavaScript Object Notation)
+Интерактивная часть семинара — обсуждение типичных ситуаций при работе с HTTP.
 
-Самый популярный формат для веб-API.
+> **Формат:** преподаватель задаёт вопрос, студенты отвечают в чате (A/B/C/D).
 
-```python
-import json
-
-# Python объект -> JSON строка
-data = {
-    "name": "Alice",
-    "age": 25,
-    "courses": ["Python", "SQL"],
-    "active": True,
-    "gpa": None
-}
-
-json_string = json.dumps(data, ensure_ascii=False, indent=2)
-print(json_string)
-
-# JSON строка -> Python объект
-parsed = json.loads(json_string)
-print(parsed["name"])  # Alice
-
-# Работа с файлами
-with open("data.json", "w", encoding="utf-8") as f:
-    json.dump(data, f, ensure_ascii=False, indent=2)
-
-with open("data.json", "r", encoding="utf-8") as f:
-    loaded = json.load(f)
-```
-
-### XML (eXtensible Markup Language)
-
-Используется в legacy системах, SOAP, RSS.
-
-```python
-import xml.etree.ElementTree as ET
-
-# Создание XML
-root = ET.Element("students")
-student = ET.SubElement(root, "student", id="1")
-ET.SubElement(student, "name").text = "Alice"
-ET.SubElement(student, "gpa").text = "4.5"
-
-xml_string = ET.tostring(root, encoding="unicode")
-print(xml_string)
-# <students><student id="1"><name>Alice</name><gpa>4.5</gpa></student></students>
-
-# Парсинг XML
-root = ET.fromstring(xml_string)
-for student in root.findall("student"):
-    name = student.find("name").text
-    gpa = student.find("gpa").text
-    print(f"{name}: {gpa}")
-```
-
-### Сравнение JSON и XML
-
-| Критерий | JSON | XML |
-|----------|------|-----|
-| Читаемость | Высокая | Средняя |
-| Размер | Компактный | Больше |
-| Типы данных | Нативные (числа, bool, null) | Только строки |
-| Схема | JSON Schema | XSD, DTD |
-| Комментарии | Нет | Да |
-| Применение | REST API, конфиги | SOAP, RSS, конфиги |
+Перейдите к файлу [`exercises/web_fundamentals_practice.md`](exercises/web_fundamentals_practice.md) и выполните **Часть 4: Ситуационные задачи (Chat Polls)**.
 
 ---
 
-## 5. REST архитектура
+## Подведение итогов
 
-### Принципы REST
+### Шпаргалка
 
-**REST** (Representational State Transfer) — архитектурный стиль для веб-сервисов.
+| Концепция | Ключевое |
+|-----------|----------|
+| IP-адрес | Адрес устройства в сети |
+| Порт | Адрес приложения на устройстве |
+| HTTP | Протокол "запрос-ответ" |
+| Заголовки | Метаданные запроса/ответа |
+| Тело | Данные запроса/ответа |
+| `requests.get()` | Получить данные |
+| `requests.post()` | Отправить данные |
+| `timeout` | Всегда указывайте! |
+| `raise_for_status()` | Проверить код ответа |
 
-1. **Клиент-сервер** — разделение ответственности
-2. **Без состояния (Stateless)** — каждый запрос содержит всю информацию
-3. **Кэширование** — ответы можно кэшировать
-4. **Единообразный интерфейс** — стандартные методы и URL
-5. **Многоуровневая система** — клиент не знает, общается ли с сервером напрямую
+### Ключевые выводы
 
-### RESTful URL дизайн
+1. **IP + Port = полный адрес** для соединения с конкретным приложением на конкретном компьютере.
 
-```
-# Ресурс: коллекция
-GET    /api/users          # Получить список пользователей
-POST   /api/users          # Создать пользователя
+2. **HTTP-запрос** состоит из стартовой строки, заголовков и тела. Заголовки — это метаданные, тело — это данные.
 
-# Ресурс: элемент
-GET    /api/users/123      # Получить пользователя 123
-PUT    /api/users/123      # Обновить пользователя 123
-PATCH  /api/users/123      # Частично обновить пользователя 123
-DELETE /api/users/123      # Удалить пользователя 123
+3. **Всегда используйте `timeout`** в запросах и обрабатывайте исключения — сеть ненадёжна.
 
-# Вложенные ресурсы
-GET    /api/users/123/orders        # Заказы пользователя 123
-GET    /api/users/123/orders/456    # Заказ 456 пользователя 123
-
-# Фильтрация и пагинация через query-параметры
-GET    /api/users?role=admin&active=true
-GET    /api/users?page=2&limit=20&sort=-created_at
-```
-
-### CRUD операции и HTTP методы
-
-| Операция | HTTP метод | Успешный код |
-|----------|------------|--------------|
-| Create | POST | 201 Created |
-| Read (list) | GET | 200 OK |
-| Read (item) | GET | 200 OK |
-| Update (full) | PUT | 200 OK |
-| Update (partial) | PATCH | 200 OK |
-| Delete | DELETE | 204 No Content |
-
-### Пример REST API ответов
-
-```python
-# GET /api/users/123 - успех
-{
-    "id": 123,
-    "name": "Alice",
-    "email": "alice@example.com",
-    "created_at": "2024-01-15T10:30:00Z"
-}
-
-# GET /api/users - список с пагинацией
-{
-    "data": [
-        {"id": 1, "name": "Alice"},
-        {"id": 2, "name": "Bob"}
-    ],
-    "meta": {
-        "total": 100,
-        "page": 1,
-        "per_page": 20
-    }
-}
-
-# POST /api/users - ошибка валидации (400)
-{
-    "error": {
-        "code": "VALIDATION_ERROR",
-        "message": "Invalid input data",
-        "details": [
-            {"field": "email", "message": "Invalid email format"}
-        ]
-    }
-}
-```
-
----
-
-## 6. Простой HTTP сервер
-
-### Встроенный сервер Python
-
-```python
-from http.server import HTTPServer, BaseHTTPRequestHandler
-import json
-
-class SimpleHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        if self.path == "/api/hello":
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            response = {"message": "Hello, World!"}
-            self.wfile.write(json.dumps(response).encode())
-        else:
-            self.send_error(404, "Not Found")
-
-    def do_POST(self):
-        content_length = int(self.headers.get("Content-Length", 0))
-        body = self.rfile.read(content_length)
-        data = json.loads(body)
-
-        self.send_response(201)
-        self.send_header("Content-Type", "application/json")
-        self.end_headers()
-        response = {"received": data}
-        self.wfile.write(json.dumps(response).encode())
-
-if __name__ == "__main__":
-    server = HTTPServer(("localhost", 8000), SimpleHandler)
-    print("Server running on http://localhost:8000")
-    server.serve_forever()
-```
-
----
-
-## 7. Инструменты для тестирования API
-
-### curl
-
-```bash
-# GET запрос
-curl https://httpbin.org/get
-
-# GET с заголовками
-curl -H "Authorization: Bearer token" https://httpbin.org/headers
-
-# POST с JSON
-curl -X POST https://httpbin.org/post \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Alice"}'
-
-# Подробный вывод
-curl -v https://httpbin.org/get
-
-# Только заголовки ответа
-curl -I https://httpbin.org/get
-```
-
-### HTTPie (более удобный CLI)
-
-```bash
-# Установка
-pip install httpie
-
-# GET запрос
-http https://httpbin.org/get
-
-# POST с JSON (по умолчанию)
-http POST https://httpbin.org/post name=Alice age:=25
-
-# С заголовками
-http https://httpbin.org/headers Authorization:"Bearer token"
-```
-
-### Python REPL
-
-```python
->>> import requests
->>> r = requests.get("https://httpbin.org/get")
->>> r.status_code
-200
->>> r.json()
-{'args': {}, 'headers': {...}, ...}
-```
+> **Помните:** Чтобы по-настоящему понять HTTP, нужно отправить сотни запросов. Используйте httpbin.org для экспериментов!
 
 ---
 
@@ -470,38 +406,21 @@ http https://httpbin.org/headers Authorization:"Bearer token"
 
 ```
 seminar_04_web_fundamentals/
-├── README.md                       # Этот файл
+├── README.md                           # Этот файл
 ├── examples/
-│   ├── 01_http_basics.py           # HTTP запросы с requests
-│   ├── 02_json_xml.py              # Работа с JSON и XML
-│   ├── 03_simple_server.py         # Простой HTTP сервер
-│   └── 04_rest_client.py           # REST API клиент
+│   ├── 01_ip_ports.py                  # Работа с IP и портами
+│   ├── 02_http_structure.py            # Структура HTTP запросов/ответов
+│   └── 03_requests_library.py          # Полное руководство по requests
 └── exercises/
-    └── web_fundamentals_practice.md # Практические задания
+    └── web_fundamentals_practice.md    # Практические задания и poll-вопросы
 ```
 
 ---
 
 ## Дополнительные материалы
 
-- [MDN Web Docs - HTTP](https://developer.mozilla.org/ru/docs/Web/HTTP) — подробное описание HTTP
+- [MDN Web Docs — HTTP](https://developer.mozilla.org/ru/docs/Web/HTTP) — подробное описание HTTP
+- [requests Documentation](https://docs.python-requests.org/) — официальная документация
+- [httpbin.org](https://httpbin.org/) — сервис для тестирования HTTP-запросов
 - [HTTP Status Codes](https://httpstatuses.com/) — справочник по кодам ответов
-- [REST API Tutorial](https://restfulapi.net/) — руководство по REST
-- [requests Documentation](https://docs.python-requests.org/) — документация библиотеки requests
-- [httpbin.org](https://httpbin.org/) — сервис для тестирования HTTP запросов
-- [JSONPlaceholder](https://jsonplaceholder.typicode.com/) — фейковый REST API для тестирования
-
----
-
-## Запуск примеров
-
-```bash
-# Установка зависимостей (если нужно)
-uv add requests
-
-# Запуск примеров
-python seminars/seminar_04_web_fundamentals/examples/01_http_basics.py
-python seminars/seminar_04_web_fundamentals/examples/02_json_xml.py
-python seminars/seminar_04_web_fundamentals/examples/03_simple_server.py  # Запустить в отдельном терминале
-python seminars/seminar_04_web_fundamentals/examples/04_rest_client.py
-```
+- [Real Python — Python requests](https://realpython.com/python-requests/) — руководство по requests
