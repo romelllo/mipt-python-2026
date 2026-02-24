@@ -1,7 +1,7 @@
 # Семинар 4: Общее представление о WEB
 **Модуль:** 3 — Создание Web-сервисов на Python  
 **Дата:** 25.02.2026  
-**Презентация:** [ссылка на презентацию]
+**Презентация:** [ссылка](https://docs.google.com/presentation/d/1LG8-jBgtq5vYt6Hu131TFVrGI5OdjRDQDb_Sv_yEgVU/edit?usp=sharing)
 
 ---
 
