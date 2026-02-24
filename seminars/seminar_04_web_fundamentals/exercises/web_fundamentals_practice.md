@@ -415,12 +415,12 @@ from requests.exceptions import ConnectionError, HTTPError, Timeout
 
 def fetch_user(user_id: int) -> dict | None:
     """Получает данные пользователя по ID.
-    
+
     Returns:
         Словарь с данными пользователя или None, если не найден.
     """
     url = f"https://jsonplaceholder.typicode.com/users/{user_id}"
-    
+
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
@@ -433,7 +433,7 @@ def fetch_user(user_id: int) -> dict | None:
         print("Ошибка соединения")
     except Timeout:
         print("Таймаут запроса")
-    
+
     return None
 
 
@@ -481,54 +481,6 @@ try:
     print(f"Ответ получен: {response.status_code}")
 except Timeout:
     print("Сервер не ответил вовремя")
-```
-
-</details>
-
----
-
-### Задание 3.5
-
-Используя сессию (`requests.Session`), выполните:
-1. Установите cookie `session_token=abc123` через `https://httpbin.org/cookies/set/session_token/abc123`
-2. Отправьте запрос на `https://httpbin.org/cookies` и убедитесь, что cookie сохранился
-3. Добавьте в сессию заголовок `X-Custom-Header: MyValue`
-4. Проверьте, что заголовок отправляется через `https://httpbin.org/headers`
-
-<details>
-<summary>Подсказка</summary>
-
-Используйте `with requests.Session() as session:`. Для добавления заголовка: `session.headers.update({...})`.
-
-</details>
-
-<details>
-<summary>Решение</summary>
-
-```python
-import requests
-
-with requests.Session() as session:
-    # 1. Устанавливаем cookie
-    session.get("https://httpbin.org/cookies/set/session_token/abc123", timeout=10)
-    
-    # 2. Проверяем cookie
-    response = session.get("https://httpbin.org/cookies", timeout=10)
-    print(f"Cookies: {response.json()['cookies']}")
-    
-    # 3. Добавляем заголовок в сессию
-    session.headers.update({"X-Custom-Header": "MyValue"})
-    
-    # 4. Проверяем заголовок
-    response = session.get("https://httpbin.org/headers", timeout=10)
-    headers = response.json()["headers"]
-    print(f"X-Custom-Header: {headers.get('X-Custom-Header')}")
-```
-
-Вывод:
-```
-Cookies: {'session_token': 'abc123'}
-X-Custom-Header: MyValue
 ```
 
 </details>
@@ -774,11 +726,11 @@ from requests.exceptions import RequestException
 
 class APIClient:
     """Простой HTTP-клиент для работы с API."""
-    
+
     def __init__(self, base_url: str):
         self.base_url = base_url.rstrip("/")
         self.session = requests.Session()
-    
+
     def get(self, endpoint: str, params: dict | None = None) -> dict | None:
         """Выполняет GET-запрос."""
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
@@ -789,7 +741,7 @@ class APIClient:
         except RequestException as e:
             print(f"Ошибка GET {url}: {e}")
             return None
-    
+
     def post(self, endpoint: str, data: dict | None = None) -> dict | None:
         """Выполняет POST-запрос с JSON-телом."""
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
@@ -800,7 +752,7 @@ class APIClient:
         except RequestException as e:
             print(f"Ошибка POST {url}: {e}")
             return None
-    
+
     def close(self):
         """Закрывает сессию."""
         self.session.close()
@@ -852,11 +804,11 @@ from requests.exceptions import ConnectionError, RequestException, Timeout
 
 def fetch_with_retry(url: str, max_retries: int = 3) -> dict | None:
     """Выполняет GET-запрос с повторными попытками.
-    
+
     Args:
         url: URL для запроса
         max_retries: Максимальное количество попыток
-        
+
     Returns:
         JSON-ответ или None при неудаче
     """
@@ -874,7 +826,7 @@ def fetch_with_retry(url: str, max_retries: int = 3) -> dict | None:
         except RequestException as e:
             print(f"Ошибка запроса: {e}")
             return None
-    
+
     print("Все попытки исчерпаны")
     return None
 
