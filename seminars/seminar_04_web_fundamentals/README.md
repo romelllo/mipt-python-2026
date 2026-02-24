@@ -377,7 +377,7 @@ response.encoding       # кодировка
 
 ### Практика
 
-Перейдите к файлу [`exercises/web_fundamentals_practice.md`](exercises/web_fundamentals_practice.md) и выполните **Часть 3: Библиотека requests** (задания 3.1–3.5).
+Перейдите к файлу [`exercises/web_fundamentals_practice.md`](exercises/web_fundamentals_practice.md) и выполните **Часть 3: Библиотека requests** (задания 3.1–3.4).
 
 ---
 
