@@ -100,7 +100,7 @@ IP-адрес + Порт = Сокет (полный адрес для соеди
   Номер офиса   = Порт (какое приложение на компьютере)
 ```
 
-### Пример в Python
+### Пример: разбор URL в Python
 
 ```python
 from urllib.parse import urlparse
@@ -113,7 +113,28 @@ print(parsed.port)      # 8443
 print(parsed.scheme)    # https
 ```
 
-> **Подробнее:** см. файл [`examples/01_ip_ports.py`](examples/01_ip_ports.py) — работа с URL, получение IP-адреса хоста.
+### Библиотека socket: работа с IP-адресами
+
+Модуль `socket` из стандартной библиотеки позволяет работать с сетевыми адресами на низком уровне:
+
+```python
+import socket
+
+# Получить IP-адрес по имени хоста (DNS-резолюция)
+ip = socket.gethostbyname("google.com")
+print(ip)  # Например: 142.250.74.206
+
+# localhost всегда резолвится в 127.0.0.1
+print(socket.gethostbyname("localhost"))  # 127.0.0.1
+
+# Если хост не существует — выбросит socket.gaierror
+try:
+    socket.gethostbyname("nonexistent.invalid")
+except socket.gaierror:
+    print("Хост не найден")
+```
+
+> **Подробнее:** см. файл [`examples/01_ip_ports.py`](examples/01_ip_ports.py) — работа с URL, получение IP-адреса хоста, проверка доступности портов.
 
 ### Практика
 
