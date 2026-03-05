@@ -2,7 +2,7 @@
 
 **Модуль:** 3 — Создание Web-сервисов на Python  
 **Дата:** 11.03.2026  
-**Презентация:** [ссылка на презентацию]
+**Презентация:** [ссылка](https://docs.google.com/presentation/d/1AuwIRsYsjZsVHoJJx2QsjvOWl-QPFu6ysFhxAvnD-Lw/edit?usp=sharing)
 
 ---
 
