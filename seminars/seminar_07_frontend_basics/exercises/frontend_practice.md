@@ -32,13 +32,11 @@ python manage.py startapp cafe
 
 ### Задание 1.1
 
-Создайте файл `my_menu.html` с корректной HTML-структурой, который отображает список из 3 блюд вашего кафе. Требования:
+Создайте файл `my_menu.html` с корректной HTML-структурой, который отображает меню кафе. Требования:
 - Обязательные теги: `<!DOCTYPE html>`, `<html>`, `<head>`, `<body>`
-- Тег `<title>` с названием вашего кафе
-- Один заголовок `<h1>` с названием кафе
-- Подзаголовок `<h2>` «Наше меню»
-- Ненумерованный список `<ul>` с 3 блюдами (используйте `<li>`)
-- Ссылка `<a>` на любой сайт
+- Заголовок `<h1>` с названием кафе и подзаголовок `<h2>` «Наше меню»
+- Ненумерованный список `<ul>` с 3 блюдами (`<li>`)
+- Карточка «Блюдо дня» внутри `<div>` с: названием в `<p style="font-weight: bold;">`, ценой, картинкой через `<img src="https://via.placeholder.com/200x120" alt="...">`
 
 <details>
 <summary>Подсказка</summary>
@@ -56,6 +54,8 @@ python manage.py startapp cafe
 </body>
 </html>
 ```
+
+`<div>` — это блочный контейнер без собственных стилей. Оберните в него все элементы карточки.
 
 </details>
 
@@ -81,51 +81,22 @@ python manage.py startapp cafe
     <li>Тирамису — 400 ₽</li>
   </ul>
 
-  <p>
-    Посмотрите наш <a href="https://example.com">полный сайт</a>.
-  </p>
+  <div style="border: 1px solid #ccc; padding: 16px; margin-top: 20px; border-radius: 8px;">
+    <h3>Блюдо дня</h3>
+    <p style="font-weight: bold;">Паста карбонара</p>
+    <p>Цена: 450 ₽</p>
+    <img
+      src="https://via.placeholder.com/200x120?text=Pasta"
+      alt="Паста карбонара"
+      width="200"
+    />
+  </div>
 
 </body>
 </html>
 ```
 
-Откройте файл в браузере — вы увидите заголовок, список и ссылку.
-
-</details>
-
----
-
-### Задание 1.2
-
-Добавьте в `my_menu.html` карточку «Блюдо дня» с использованием тега `<div>`. Карточка должна содержать:
-- Подзаголовок `<h3>` «Блюдо дня»
-- Название блюда в теге `<p>` с атрибутом `style="font-weight: bold;"`
-- Цену блюда
-- Картинку через `<img>` (можете использовать `https://via.placeholder.com/200x120`)
-
-<details>
-<summary>Подсказка</summary>
-
-`<div>` — это блочный контейнер без собственных стилей. Оберните в него все элементы карточки. Для картинки: `<img src="URL" alt="Описание" width="200" />`.
-
-</details>
-
-<details>
-<summary>Решение</summary>
-
-```html
-<!-- Добавьте в <body>, после списка меню -->
-<div style="border: 1px solid #ccc; padding: 16px; margin-top: 20px; border-radius: 8px;">
-  <h3>Блюдо дня</h3>
-  <p style="font-weight: bold;">Паста карбонара</p>
-  <p>Цена: 450 ₽</p>
-  <img
-    src="https://via.placeholder.com/200x120?text=Pasta"
-    alt="Паста карбонара"
-    width="200"
-  />
-</div>
-```
+Откройте файл в браузере — вы увидите заголовок, список и карточку блюда дня.
 
 </details>
 
@@ -137,11 +108,13 @@ python manage.py startapp cafe
 
 ### Задание 2.1
 
-Добавьте к вашему `my_menu.html` встроенный блок `<style>` в `<head>`. Требования:
-- Установите `font-family: Arial, sans-serif` для всей страницы через селектор `body`
-- Задайте цвет фона страницы через `background-color`
-- Ограничьте ширину содержимого до `600px` и центрируйте через `margin: 0 auto`
-- Задайте `<h1>` синий цвет и выравнивание по центру
+Добавьте стилизацию к `my_menu.html` в два шага:
+
+**Шаг 1 — встроенные стили:** добавьте блок `<style>` в `<head>`:
+- `body`: шрифт `Arial, sans-serif`, фон `#f5f5f5`, ширина `max-width: 600px`, центрирование `margin: 0 auto`
+- `h1`: синий цвет, выравнивание по центру
+
+**Шаг 2 — внешний CSS:** создайте файл `my_styles.css`, подключите его через `<link rel="stylesheet" href="my_styles.css" />` и перенесите стили туда. Добавьте класс `.price` с красным жирным шрифтом и примените его к тегу с ценой блюда дня.
 
 <details>
 <summary>Подсказка</summary>
@@ -149,15 +122,13 @@ python manage.py startapp cafe
 Вставьте в `<head>`:
 ```html
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    /* ваши стили */
-  }
-  h1 {
-    /* ваши стили */
-  }
+  body { font-family: Arial, sans-serif; /* ... */ }
+  h1   { color: #2980b9; text-align: center; }
 </style>
 ```
+
+Класс в CSS: `.price { color: #e74c3c; font-weight: bold; }`.  
+Применение в HTML: `<p class="price">450 ₽</p>`.
 
 `margin: 0 auto` центрирует блочный элемент с фиксированной шириной.
 
@@ -166,81 +137,44 @@ python manage.py startapp cafe
 <details>
 <summary>Решение</summary>
 
-```html
-<head>
-  <meta charset="UTF-8" />
-  <title>Кафе «Солнышко»</title>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-      max-width: 600px;
-      margin: 0 auto;       /* Центрировать контейнер */
-      padding: 20px;
-    }
-
-    h1 {
-      color: #2980b9;
-      text-align: center;
-    }
-
-    h2 {
-      color: #555;
-      margin-top: 24px;
-    }
-
-    ul {
-      list-style: none;     /* Убрать маркеры */
-      padding: 0;
-    }
-
-    li {
-      padding: 8px 0;
-      border-bottom: 1px solid #ddd;
-    }
-  </style>
-</head>
-```
-
-</details>
-
----
-
-### Задание 2.2
-
-Создайте отдельный файл `my_styles.css` и подключите его к `my_menu.html` через `<link>`. В CSS-файле:
-- Добавьте стили для карточки «Блюдо дня»: белый фон, скруглённые углы (`border-radius`), тень (`box-shadow`), отступы
-- Создайте класс `.price` с красным жирным шрифтом
-- Примените класс `.price` к тегу с ценой в HTML
-
-<details>
-<summary>Подсказка</summary>
-
-Подключение: `<link rel="stylesheet" href="my_styles.css" />` в `<head>`.  
-Класс в CSS: `.price { color: red; font-weight: bold; }`.  
-Применение в HTML: `<p class="price">450 ₽</p>`.
-
-</details>
-
-<details>
-<summary>Решение</summary>
-
 `my_styles.css`:
 ```css
-/* Стили для карточки блюда дня */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  color: #2980b9;
+  text-align: center;
+}
+
+h2 {
+  color: #555;
+  margin-top: 24px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Карточка блюда дня */
 .day-card {
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 16px 20px;
   margin-top: 24px;
-}
-
-.day-card h3 {
-  color: #e67e22;
-  margin-bottom: 8px;
 }
 
 /* Класс для цены */
@@ -251,12 +185,12 @@ python manage.py startapp cafe
 }
 ```
 
-`my_menu.html` (в `<head>`):
+`my_menu.html` — в `<head>` замените `<style>` на:
 ```html
 <link rel="stylesheet" href="my_styles.css" />
 ```
 
-В HTML-карточке замените `<div style="...">` на:
+В HTML-карточке замените `<div style="...">` и `<p>` с ценой на:
 ```html
 <div class="day-card">
   <h3>Блюдо дня</h3>
@@ -270,81 +204,17 @@ python manage.py startapp cafe
 
 ---
 
-### Задание 2.3
-
-Используя Flexbox, расположите 3 карточки меню в строку. Добавьте в HTML три `<div class="menu-card">` и напишите CSS:
-- `.menu-grid` — контейнер с `display: flex`, `gap: 16px`
-- `.menu-card` — фиксированная ширина `180px`, белый фон, скруглённые углы, отступ
-- При наведении (`hover`) карточка должна немного подниматься (`transform: translateY(...)`)
-
-<details>
-<summary>Подсказка</summary>
-
-Flexbox включается на контейнере: `display: flex`. Дочерние элементы становятся «flex-элементами».  
-Эффект при наведении: `.menu-card:hover { transform: translateY(-4px); transition: transform 0.2s; }`.
-
-</details>
-
-<details>
-<summary>Решение</summary>
-
-HTML:
-```html
-<div class="menu-grid">
-  <div class="menu-card">
-    <h3>Капучино</h3>
-    <p class="price">250 ₽</p>
-  </div>
-  <div class="menu-card">
-    <h3>Круассан</h3>
-    <p class="price">150 ₽</p>
-  </div>
-  <div class="menu-card">
-    <h3>Тирамису</h3>
-    <p class="price">400 ₽</p>
-  </div>
-</div>
-```
-
-CSS (`my_styles.css`):
-```css
-.menu-grid {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;     /* Перенос на новую строку на маленьких экранах */
-  margin-top: 20px;
-}
-
-.menu-card {
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 16px;
-  width: 180px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-}
-
-.menu-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-}
-```
-
-</details>
-
----
-
 ## Часть 3: JavaScript — основы
 
 > **Теория:** [README.md — Блок 3](../README.md#блок-3-javascript-основы-10-мин) | **Примеры:** [`examples/03_javascript_basics.html`](../examples/03_javascript_basics.html) | [`examples/03_script.js`](../examples/03_script.js)
 
 ### Задание 3.1
 
-Добавьте в `my_menu.html` кнопку и встроенный `<script>`:
-- Кнопка «Показать приветствие» с `id="btn-hello"`
-- В скрипте: по клику на кнопку выводите `console.log("Привет!")` и меняйте текст кнопки на «Привет! 👋»
+Добавьте в `my_menu.html` интерактивность в два шага:
 
-Откройте DevTools (F12 → Console), чтобы увидеть вывод `console.log`.
+**Шаг 1 — встроенный скрипт:** добавьте кнопку «Показать приветствие» с `id="btn-hello"` и `<script>` в конце `<body>`. По клику: вывести `console.log("Привет!")` и изменить текст кнопки на «Привет! 👋». Откройте DevTools (F12 → Console), чтобы увидеть вывод.
+
+**Шаг 2 — внешний файл:** вынесите JS в файл `my_script.js`, подключите через `<script src="my_script.js" defer></script>` в `<head>`, встроенный `<script>` удалите. Добавьте кнопку «Сбросить» (`id="btn-reset"`), которая возвращает текст первой кнопки обратно.
 
 <details>
 <summary>Подсказка</summary>
@@ -353,41 +223,7 @@ CSS (`my_styles.css`):
 `.addEventListener("click", function() { ... })` — подписаться на клик.  
 `.textContent = "..."` — изменить текст элемента.
 
-</details>
-
-<details>
-<summary>Решение</summary>
-
-В `<body>`:
-```html
-<button id="btn-hello">Показать приветствие</button>
-
-<!-- script должен быть ПОСЛЕ кнопки в HTML, чтобы кнопка уже существовала -->
-<script>
-  const btn = document.getElementById("btn-hello");
-
-  btn.addEventListener("click", function () {
-    console.log("Привет!");
-    btn.textContent = "Привет! 👋";
-  });
-</script>
-```
-
-</details>
-
----
-
-### Задание 3.2
-
-Вынесите JavaScript из предыдущего задания в отдельный файл `my_script.js`. Подключите его через `<script src="my_script.js" defer></script>`.
-
-Дополнительно: добавьте кнопку «Сбросить» — при клике возвращает текст первой кнопки обратно в «Показать приветствие».
-
-<details>
-<summary>Подсказка</summary>
-
-`defer` — скрипт выполняется после загрузки всего HTML, поэтому `document.getElementById(...)` найдёт элемент даже если `<script>` в `<head>`.  
-В `my_script.js` используйте `document.getElementById` так же, как в inline-скрипте.
+`defer` — скрипт выполняется после загрузки всего HTML, поэтому `document.getElementById(...)` найдёт элемент даже если `<script>` в `<head>`.
 
 </details>
 
@@ -410,12 +246,12 @@ btnReset.addEventListener("click", function () {
 });
 ```
 
-`my_menu.html` — в `<head>`:
+`my_menu.html` — в `<head>` добавьте (inline-script в `<body>` удалите):
 ```html
 <script src="my_script.js" defer></script>
 ```
 
-В `<body>` (inline-script убрать):
+В `<body>`:
 ```html
 <button id="btn-hello">Показать приветствие</button>
 <button id="btn-reset">Сбросить</button>
@@ -431,24 +267,24 @@ btnReset.addEventListener("click", function () {
 
 ### Задание 4.1
 
-В вашем Django-проекте (кафе из семинара 6) создайте директорию шаблонов и базовый шаблон:
+В Django-проекте кафе из семинара 6 создайте базовый шаблон и страницу меню:
 
-1. Создайте папку `cafe_project/templates/`
-2. В `settings.py` в `TEMPLATES` добавьте `BASE_DIR / "templates"` в `DIRS`
-3. Создайте `templates/base.html` с:
-   - Полной HTML-структурой (`<!DOCTYPE html>`, `<html>`, `<head>`, `<body>`)
-   - Блоком `{% block title %}Кафе{% endblock %}` в `<title>`
-   - Блоком `{% block content %}{% endblock %}` в `<body>`
+1. В `settings.py` добавьте `BASE_DIR / "templates"` в `TEMPLATES → DIRS`
+2. Создайте `templates/base.html` с полной HTML-структурой, блоками `{% block title %}` и `{% block content %}`
+3. В `cafe/views.py` создайте view `menu_list`, который передаёт в шаблон все объекты `MenuItem` через `select_related("category")`
+4. Создайте `cafe/templates/cafe/menu_list.html` c `{% extends "base.html" %}`, `{% for item in menu_items %}` и `{% if item.is_available %}`
+5. Подключите URL `/menu/` и запустите сервер: `python manage.py runserver`
 
 <details>
 <summary>Подсказка</summary>
 
-В `settings.py` найдите список `TEMPLATES` и измените:
+View минимальный:
 ```python
-"DIRS": [BASE_DIR / "templates"],
+return render(request, "cafe/menu_list.html", {"menu_items": MenuItem.objects.all().select_related("category")})
 ```
 
-В шаблоне используйте `{% block имя %}контент_по_умолчанию{% endblock %}`.
+Шаблон: создайте папку `cafe/templates/cafe/` (Django ищет шаблоны именно в `templates/<app>/`).  
+URL с параметром: `path("menu/", menu_list, name="menu_list")`.
 
 </details>
 
@@ -473,49 +309,19 @@ TEMPLATES = [
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>{% block title %}Кафе «Питоновая кружка»{% endblock %}</title>
+  <title>{% block title %}Кафе{% endblock %}</title>
 </head>
 <body>
-
   <header>
     <h1><a href="/">☕ Питоновая кружка</a></h1>
   </header>
-
   <main>
     {% block content %}{% endblock %}
   </main>
-
-  <footer>
-    <p>© 2026 Кафе «Питоновая кружка»</p>
-  </footer>
-
+  <footer><p>© 2026 Кафе «Питоновая кружка»</p></footer>
 </body>
 </html>
 ```
-
-</details>
-
----
-
-### Задание 4.2
-
-Создайте view `menu_list` и шаблон `cafe/templates/cafe/menu_list.html`:
-
-1. В `cafe/views.py` создайте view, который передаёт в шаблон список объектов `MenuItem`
-2. В шаблоне используйте `{% extends "base.html" %}`, `{% for item in menu_items %}`, `{% if item.is_available %}`
-3. Подключите view к URL `/menu/` в `cafe/urls.py` и включите `cafe.urls` в `cafe_project/urls.py`
-4. Запустите сервер: `python manage.py runserver` и откройте `http://localhost:8000/menu/`
-
-<details>
-<summary>Подсказка</summary>
-
-View минимальный: `return render(request, "cafe/menu_list.html", {"menu_items": MenuItem.objects.all()})`.  
-Шаблон: создайте папку `cafe/templates/cafe/` (Django ищет шаблоны именно в `templates/<app>/`).
-
-</details>
-
-<details>
-<summary>Решение</summary>
 
 `cafe/views.py`:
 ```python
@@ -582,19 +388,31 @@ urlpatterns = [
 
 ---
 
-### Задание 4.3
+## Часть 5: Собираем всё вместе
 
-Добавьте в Django-проект статические файлы:
+> **Теория:** [README.md — Блок 5](../README.md#блок-5-собираем-всё-вместе-15-мин) | **Примеры:** [`examples/05_cafe_menu_complete/`](../examples/05_cafe_menu_complete/)
 
-1. В `settings.py` убедитесь, что `STATIC_URL = "static/"` задан (он там по умолчанию)
-2. Создайте файл `cafe/static/cafe/css/style.css` с минимальными стилями (фон, шрифт, цвет ссылок)
-3. Подключите CSS в `base.html` через `{% load static %}` и `{% static 'cafe/css/style.css' %}`
+### Задание 5.1
+
+Улучшите страницу меню: добавьте CSS и JavaScript-фильтрацию по категориям.
+
+**CSS (статические файлы):**
+1. Создайте `cafe/static/cafe/css/style.css` с Flexbox-сеткой `.menu-grid` и карточками `.menu-card`
+2. Подключите CSS в `base.html` через `{% load static %}` и тег `{% static 'cafe/css/style.css' %}`
+3. Замените список `<ul>` в шаблоне на сетку карточек
+
+**JavaScript (фильтрация):**
+4. В view добавьте в контекст `"categories": Category.objects.all()`
+5. В шаблоне добавьте кнопки-фильтры `<button data-category="{{ category.id }}">` и атрибут `data-category="{{ item.category.id }}"` на каждой карточке
+6. Создайте `cafe/static/cafe/js/menu.js` — по клику на кнопку скрывать/показывать карточки нужной категории
+7. Подключите JS через `{% static 'cafe/js/menu.js' %}` перед `</body>`
 
 <details>
 <summary>Подсказка</summary>
 
-Структура статики: `<app>/static/<app>/css/style.css` (двойное имя приложения — намеренно, чтобы избежать коллизий при `collectstatic`).  
-Тег в шаблоне: `<link rel="stylesheet" href="{% static 'cafe/css/style.css' %}">` — но нужно сначала добавить `{% load static %}` в начало файла.
+Структура статики: `<app>/static/<app>/css/style.css` — двойное имя приложения намеренно, чтобы избежать коллизий при `collectstatic`.
+
+В JS: `document.querySelectorAll(".filter-btn")` — все кнопки. При клике: `btn.dataset.category` — значение `data-category`. Карточки скрывать через `card.style.display = "none"`, показывать через `card.style.display = ""`.
 
 </details>
 
@@ -622,89 +440,29 @@ header {
 }
 
 header a { color: #fff; text-decoration: none; }
-```
 
-`templates/base.html` (обновлённый):
-```html
-{% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <title>{% block title %}Кафе{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'cafe/css/style.css' %}" />
-</head>
-<body>
-  <header>
-    <h1><a href="/">☕ Питоновая кружка</a></h1>
-  </header>
-  <main>
-    {% block content %}{% endblock %}
-  </main>
-  <footer><p>© 2026</p></footer>
-</body>
-</html>
-```
-
-</details>
-
----
-
-## Часть 5: Собираем всё вместе
-
-> **Теория:** [README.md — Блок 5](../README.md#блок-5-собираем-всё-вместе-15-мин) | **Примеры:** [`examples/05_cafe_menu_complete/`](../examples/05_cafe_menu_complete/)
-
-### Задание 5.1
-
-Улучшите шаблон `menu_list.html`: замените список `<ul>` на сетку карточек с CSS:
-- Используйте Flexbox-сетку `.menu-grid` с карточками `.menu-card`
-- В каждой карточке: название, категория (бейдж), цена, кнопка «В корзину» (или «Нет в наличии»)
-- Создайте или дополните `cafe/static/cafe/css/style.css` стилями для сетки и карточек
-
-<details>
-<summary>Подсказка</summary>
-
-Возьмите за основу стили из [`examples/02_styles.css`](../examples/02_styles.css) или из [`examples/05_cafe_menu_complete/static/cafe/css/style.css`](../examples/05_cafe_menu_complete/static/cafe/css/style.css). Скопируйте классы `.menu-grid`, `.menu-card`, `.btn`.
-
-</details>
-
-<details>
-<summary>Решение</summary>
-
-`cafe/templates/cafe/menu_list.html`:
-```html
-{% extends "base.html" %}
-{% load static %}
-
-{% block title %}Меню{% endblock %}
-
-{% block content %}
-  <h2 class="page-title">Меню кафе</h2>
-
-  {% if menu_items %}
-    <div class="menu-grid">
-      {% for item in menu_items %}
-        <div class="menu-card {% if not item.is_available %}menu-card--unavailable{% endif %}">
-          <span class="menu-card__badge">{{ item.category.name }}</span>
-          <h3 class="menu-card__title">{{ item.name }}</h3>
-          <p class="menu-card__price">{{ item.price }} ₽</p>
-          {% if item.is_available %}
-            <button class="btn btn--primary">В корзину</button>
-          {% else %}
-            <button class="btn btn--disabled" disabled>Нет в наличии</button>
-          {% endif %}
-        </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <p>Меню пустое. <a href="/admin/">Добавить через админку</a>.</p>
-  {% endif %}
-{% endblock %}
-```
-
-Добавьте в `cafe/static/cafe/css/style.css` (минимум):
-```css
 .page-title { font-size: 1.8rem; margin-bottom: 20px; }
+
+.category-filter {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.filter-btn {
+  padding: 6px 16px;
+  border: 2px solid #3498db;
+  background: #fff;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.filter-btn--active {
+  background: #3498db;
+  color: #fff;
+}
 
 .menu-grid {
   display: flex;
@@ -717,7 +475,7 @@ header a { color: #fff; text-decoration: none; }
   border-radius: 10px;
   padding: 18px;
   width: 200px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
 }
 
 .menu-card--unavailable { opacity: 0.5; }
@@ -738,59 +496,6 @@ header a { color: #fff; text-decoration: none; }
 .btn--primary { background: #3498db; color: #fff; }
 .btn--primary:hover { background: #2980b9; }
 .btn--disabled { background: #ddd; color: #999; cursor: not-allowed; }
-```
-
-</details>
-
----
-
-### Задание 5.2
-
-Добавьте JavaScript-фильтрацию по категориям:
-
-1. В view передайте в контекст список всех категорий: `"categories": Category.objects.all()`
-2. В шаблоне добавьте кнопки-фильтры с `data-category="{{ category.id }}"` и у каждой карточки — `data-category="{{ item.category.id }}"`
-3. Создайте файл `cafe/static/cafe/js/menu.js` с JavaScript, который при клике на кнопку скрывает/показывает карточки нужной категории
-4. Подключите JS в `base.html` через `{% static 'cafe/js/menu.js' %}`
-
-<details>
-<summary>Подсказка</summary>
-
-В JS: `document.querySelectorAll(".filter-btn")` — все кнопки. При клике: `btn.dataset.category` — значение `data-category`. Карточки скрывать/показывать через `card.style.display = "none"` или `card.style.display = ""`.
-
-</details>
-
-<details>
-<summary>Решение</summary>
-
-`cafe/views.py` (обновлённый):
-```python
-from cafe.models import Category, MenuItem
-
-def menu_list(request):
-    menu_items = MenuItem.objects.all().select_related("category")
-    categories = Category.objects.all()
-    return render(request, "cafe/menu_list.html", {
-        "menu_items": menu_items,
-        "categories": categories,
-    })
-```
-
-В `menu_list.html` — добавьте перед `.menu-grid`:
-```html
-<div class="category-filter" id="category-filter">
-  <button class="filter-btn filter-btn--active" data-category="all">Все</button>
-  {% for category in categories %}
-    <button class="filter-btn" data-category="{{ category.id }}">
-      {{ category.name }}
-    </button>
-  {% endfor %}
-</div>
-```
-
-У каждой карточки добавьте атрибут:
-```html
-<div class="menu-card ..." data-category="{{ item.category.id }}">
 ```
 
 `cafe/static/cafe/js/menu.js`:
@@ -822,32 +527,103 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 ```
 
-В `base.html` перед `</body>`:
+`templates/base.html` (обновлённый):
 ```html
 {% load static %}
-<script src="{% static 'cafe/js/menu.js' %}"></script>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}Кафе{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'cafe/css/style.css' %}" />
+</head>
+<body>
+  <header>
+    <h1><a href="/">☕ Питоновая кружка</a></h1>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer><p>© 2026</p></footer>
+  <script src="{% static 'cafe/js/menu.js' %}"></script>
+</body>
+</html>
+```
+
+`cafe/views.py` (обновлённый):
+```python
+from django.shortcuts import render
+from cafe.models import Category, MenuItem
+
+
+def menu_list(request):
+    menu_items = MenuItem.objects.all().select_related("category")
+    categories = Category.objects.all()
+    return render(request, "cafe/menu_list.html", {
+        "menu_items": menu_items,
+        "categories": categories,
+    })
+```
+
+`cafe/templates/cafe/menu_list.html` (обновлённый):
+```html
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Меню{% endblock %}
+
+{% block content %}
+  <h2 class="page-title">Меню кафе</h2>
+
+  <div class="category-filter" id="category-filter">
+    <button class="filter-btn filter-btn--active" data-category="all">Все</button>
+    {% for category in categories %}
+      <button class="filter-btn" data-category="{{ category.id }}">
+        {{ category.name }}
+      </button>
+    {% endfor %}
+  </div>
+
+  {% if menu_items %}
+    <div class="menu-grid">
+      {% for item in menu_items %}
+        <div class="menu-card {% if not item.is_available %}menu-card--unavailable{% endif %}"
+             data-category="{{ item.category.id }}">
+          <span class="menu-card__badge">{{ item.category.name }}</span>
+          <h3 class="menu-card__title">{{ item.name }}</h3>
+          <p class="menu-card__price">{{ item.price }} ₽</p>
+          {% if item.is_available %}
+            <button class="btn btn--primary">В корзину</button>
+          {% else %}
+            <button class="btn btn--disabled" disabled>Нет в наличии</button>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>Меню пустое. <a href="/admin/">Добавить через админку</a>.</p>
+  {% endif %}
+{% endblock %}
 ```
 
 </details>
 
 ---
 
-## Бонусные задания
-
-Эти задания объединяют несколько тем семинара. Попробуйте решить самостоятельно!
+## Бонусное задание
 
 ### Задание Б.1: Поиск по названию блюда
 
-Добавьте на страницу меню поле поиска, которое в реальном времени фильтрует карточки по названию блюда. Требования:
+Добавьте на страницу меню поле поиска, которое в реальном времени фильтрует карточки по названию. Требования:
 - `<input type="text" id="menu-search" placeholder="Поиск...">` в шаблоне
-- У каждой карточки атрибут `data-name="{{ item.name|lower }}"` (Jinja-фильтр `lower` приводит к нижнему регистру)
+- У каждой карточки атрибут `data-name="{{ item.name|lower }}"` (фильтр `lower` приводит к нижнему регистру)
 - JavaScript: при событии `input` скрывать карточки, название которых не содержит введённую строку
-- Поиск и фильтр по категории должны работать **вместе** (оба условия должны быть выполнены)
+- Поиск и фильтр по категории должны работать **вместе** (оба условия применяются одновременно)
 
 <details>
 <summary>Подсказка</summary>
 
-Храните текущую категорию в переменной `activeCategory`, а текущий запрос в `searchQuery`. Применяйте оба фильтра в единой функции `applyFilters()`. Вызывайте её и из обработчика кнопок, и из обработчика поля ввода.
+Храните текущую категорию в переменной `activeCategory`, а текущий запрос в `searchQuery`. Реализуйте единую функцию `applyFilters()` и вызывайте её из обоих обработчиков событий.
 
 </details>
 
@@ -867,7 +643,7 @@ document.addEventListener("DOMContentLoaded", function () {
 </div>
 ```
 
-У карточек добавьте:
+У карточек добавьте атрибут:
 ```html
 <div class="menu-card ..." data-category="{{ item.category.id }}" data-name="{{ item.name|lower }}">
 ```
@@ -913,97 +689,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 ---
 
-### Задание Б.2: Страница детали блюда
-
-Добавьте страницу с подробным описанием блюда, которая открывается по клику на карточку:
-
-1. Создайте view `menu_detail(request, pk)`, который получает объект `MenuItem.objects.get(pk=pk)`
-2. Обработайте случай «блюдо не найдено» через `get_object_or_404`
-3. Создайте шаблон `cafe/menu_detail.html` с подробной информацией
-4. Добавьте URL `menu/<int:pk>/` → `menu_detail`
-5. В `menu_list.html` оберните название блюда в ссылку `<a href="{% url 'cafe:menu_detail' item.pk %}">`
-
-<details>
-<summary>Подсказка</summary>
-
-`get_object_or_404(MenuItem, pk=pk)` — если объект не найден, Django автоматически вернёт ответ 404.  
-URL с параметром: `path("menu/<int:pk>/", menu_detail, name="menu_detail")`.  
-В шаблоне: `{% url 'cafe:menu_detail' item.pk %}`.
-
-</details>
-
-<details>
-<summary>Решение</summary>
-
-`cafe/views.py`:
-```python
-from django.shortcuts import get_object_or_404, render
-from cafe.models import Category, MenuItem
-
-
-def menu_list(request):
-    menu_items = MenuItem.objects.all().select_related("category")
-    categories = Category.objects.all()
-    return render(request, "cafe/menu_list.html", {
-        "menu_items": menu_items,
-        "categories": categories,
-    })
-
-
-def menu_detail(request, pk: int):
-    """Детальная страница позиции меню."""
-    item = get_object_or_404(MenuItem, pk=pk)
-    return render(request, "cafe/menu_detail.html", {"item": item})
-```
-
-`cafe/urls.py`:
-```python
-from django.urls import path
-from cafe.views import menu_list, menu_detail
-
-app_name = "cafe"
-urlpatterns = [
-    path("menu/", menu_list, name="menu_list"),
-    path("menu/<int:pk>/", menu_detail, name="menu_detail"),
-]
-```
-
-`cafe/templates/cafe/menu_detail.html`:
-```html
-{% extends "base.html" %}
-
-{% block title %}{{ item.name }} — Кафе{% endblock %}
-
-{% block content %}
-  <a href="{% url 'cafe:menu_list' %}">← Назад к меню</a>
-
-  <h2>{{ item.name }}</h2>
-  <p>Категория: <strong>{{ item.category.name }}</strong></p>
-  <p>Цена: <strong>{{ item.price }} ₽</strong></p>
-  <p>
-    Статус:
-    {% if item.is_available %}
-      <span style="color: green;">✓ В наличии</span>
-    {% else %}
-      <span style="color: red;">✗ Нет в наличии</span>
-    {% endif %}
-  </p>
-{% endblock %}
-```
-
-В `menu_list.html` замените `<h3>{{ item.name }}</h3>` на:
-```html
-<h3><a href="{% url 'cafe:menu_detail' item.pk %}">{{ item.name }}</a></h3>
-```
-
-</details>
-
----
-
 ## Полезные ресурсы
 
 - [MDN Web Docs — HTML](https://developer.mozilla.org/ru/docs/Web/HTML) — справочник по HTML-тегам на русском
 - [MDN Web Docs — CSS](https://developer.mozilla.org/ru/docs/Web/CSS) — справочник по CSS с примерами
-- [MDN Flexbox Guide](https://developer.mozilla.org/ru/docs/Learn/CSS/CSS_layout/Flexbox) — руководство по Flexbox
 - [Django Templates](https://docs.djangoproject.com/en/5.0/topics/templates/) — официальная документация по шаблонам
 - [Django Static Files](https://docs.djangoproject.com/en/5.0/howto/static-files/) — работа со статическими файлами в Django
