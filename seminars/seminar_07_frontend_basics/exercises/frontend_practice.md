@@ -448,9 +448,13 @@ urlpatterns = [
 4. Замените список `<ul>` в шаблоне на сетку карточек
 
 **JavaScript (фильтрация):**
+
 5. В view добавьте в контекст `"categories": Category.objects.all()`
+
 6. В шаблоне добавьте кнопки-фильтры `<button data-category="{{ category.id }}">` и атрибут `data-category="{{ item.category.id }}"` на каждой карточке
+
 7. Создайте `cafe/static/cafe/js/menu.js` — по клику на кнопку скрывать/показывать карточки нужной категории
+
 8. Подключите JS через `{% static 'cafe/js/menu.js' %}` перед `</body>`
 
 <details>
