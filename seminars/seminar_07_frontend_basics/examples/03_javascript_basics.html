@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!--
+  Семинар 7: JavaScript — основы и DOM
+  Этот файл демонстрирует:
+    1. Встроенный <script> — inline JavaScript
+    2. Внешний файл 03_script.js (через <script src="...">)
+    3. console.log — вывод в консоль браузера (F12 → Console)
+    4. document.getElementById — нахождение элемента по id
+    5. addEventListener — подписка на событие (клик, ввод и т.д.)
+    6. Изменение содержимого элемента через .textContent / .innerHTML
+
+  Как смотреть: откройте в браузере, нажмите F12 → Console,
+  чтобы видеть вывод console.log().
+-->
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JavaScript — Основы</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background: #f9f9f9;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-top: 28px;
+    }
+
+    .demo-box {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 12px 0;
+    }
+
+    button {
+      background: #3498db;
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      margin-right: 8px;
+    }
+
+    button:hover {
+      background: #2980b9;
+    }
+
+    #counter-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #e74c3c;
+      margin: 8px 0;
+    }
+
+    #status-message {
+      padding: 10px 14px;
+      border-radius: 6px;
+      background: #d4edda;
+      color: #155724;
+      display: none;           /* Скрыто по умолчанию */
+    }
+
+    #filter-input {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      width: 200px;
+    }
+
+    #menu-list li {
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>JavaScript — демонстрация</h1>
+  <p>Откройте <strong>DevTools → Console</strong> (F12), чтобы видеть вывод <code>console.log()</code>.</p>
+
+  <!-- ============================================================
+       Блок 1: Встроенный script — console.log
+  ============================================================ -->
+  <h2>1. console.log и переменные</h2>
+  <div class="demo-box">
+    <p>Посмотрите в консоль браузера — там появятся сообщения.</p>
+    <button id="btn-log">Запустить console.log</button>
+  </div>
+
+  <!-- ============================================================
+       Блок 2: Изменение текста на странице (DOM manipulation)
+  ============================================================ -->
+  <h2>2. Счётчик — изменение DOM</h2>
+  <div class="demo-box">
+    <p>Счётчик: <span id="counter-value">0</span></p>
+    <!-- Кнопки связаны с 03_script.js -->
+    <button id="btn-increment">+1</button>
+    <button id="btn-decrement">−1</button>
+    <button id="btn-reset">Сбросить</button>
+  </div>
+
+  <!-- ============================================================
+       Блок 3: Показать/скрыть сообщение
+  ============================================================ -->
+  <h2>3. Показать / скрыть элемент</h2>
+  <div class="demo-box">
+    <button id="btn-toggle">Показать сообщение</button>
+    <!-- Этот блок скрыт через CSS display:none -->
+    <div id="status-message">🎉 Ваш заказ принят! Ожидайте 15 минут.</div>
+  </div>
+
+  <!-- ============================================================
+       Блок 4: Фильтрация списка (простой вариант того,
+       что будет в Django-шаблоне)
+  ============================================================ -->
+  <h2>4. Фильтрация списка по вводу</h2>
+  <div class="demo-box">
+    <input
+      type="text"
+      id="filter-input"
+      placeholder="Введите название..."
+    />
+    <ul id="menu-list">
+      <li data-name="Капучино">☕ Капучино — 250 ₽</li>
+      <li data-name="Латте">☕ Латте — 280 ₽</li>
+      <li data-name="Эспрессо">☕ Эспрессо — 180 ₽</li>
+      <li data-name="Круассан">🥐 Круассан — 150 ₽</li>
+      <li data-name="Тирамису">🍰 Тирамису — 400 ₽</li>
+    </ul>
+  </div>
+
+  <!-- ============================================================
+       Встроенный <script> — выполняется немедленно.
+       Обратите внимание: он ПОСЛЕ элементов в body,
+       чтобы DOM уже существовал на момент выполнения.
+  ============================================================ -->
+  <script>
+    // Встроенный JS: подключаем обработчик для кнопки console.log
+    // document.getElementById — найти элемент по атрибуту id
+    const btnLog = document.getElementById("btn-log");
+
+    // addEventListener — подписаться на событие "click"
+    btnLog.addEventListener("click", function () {
+      // console.log — вывод в консоль браузера (F12)
+      console.log("Привет из inline <script>!");
+      console.log("Текущее время:", new Date().toLocaleTimeString());
+
+      const items = ["Капучино", "Латте", "Эспрессо"];
+      console.log("Меню:", items);
+      console.log("Количество позиций:", items.length);
+    });
+  </script>
+
+  <!-- ============================================================
+       Внешний <script> — подключаем отдельный файл 03_script.js
+       Так же, как <link> для CSS, но для JavaScript.
+       defer — загружать файл параллельно, выполнить после парсинга HTML
+  ============================================================ -->
+  <script src="03_script.js" defer></script>
+
+</body>
+</html>

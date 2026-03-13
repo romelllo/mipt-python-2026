@@ -1,0 +1,100 @@
+{# ============================================================ #}
+{# Семинар 7: Шаблон списка меню (menu_list.html)             #}
+{#                                                              #}
+{# Расширяет base.html и заполняет блоки:                     #}
+{#   - title: «Меню — Кафе»                                   #}
+{#   - content: сетка карточек меню с фильтром по категориям  #}
+{#                                                              #}
+{# Расположение в проекте:                                      #}
+{#   cafe/templates/cafe/menu_list.html                        #}
+{# ============================================================ #}
+
+{% extends "base.html" %}
+{# ↑ Наследуемся от базового шаблона — получаем header, footer, стили #}
+
+{% load static %}
+
+{# Переопределяем заголовок вкладки #}
+{% block title %}Меню — Кафе «Питоновая кружка»{% endblock %}
+
+{% block content %}
+
+  <h1 class="page-title">Наше меню</h1>
+
+  {# ============================================================
+     Фильтр по категориям
+     Кнопки — ссылки с query-параметром ?category=<id>
+     Активная кнопка выделяется классом "filter-btn--active"
+  ============================================================ #}
+  <div class="category-filter" id="category-filter">
+
+    {# Кнопка "Все" — сбросить фильтр #}
+    <button
+      class="filter-btn {% if not selected_category %}filter-btn--active{% endif %}"
+      data-category="all"
+    >
+      Все
+    </button>
+
+    {# Перебираем все категории, переданные из view #}
+    {% for category in categories %}
+      <button
+        class="filter-btn {% if selected_category == category.id %}filter-btn--active{% endif %}"
+        data-category="{{ category.id }}"
+      >
+        {{ category.name }}
+      </button>
+    {% endfor %}
+
+  </div>
+
+  {# ============================================================
+     Сетка карточек меню
+     menu_items — список объектов MenuItem из view
+  ============================================================ #}
+  <div class="menu-grid" id="menu-grid">
+
+    {# Проверяем: есть ли вообще позиции меню #}
+    {% if menu_items %}
+
+      {% for item in menu_items %}
+        {# Каждой карточке присваиваем data-category для JS-фильтрации #}
+        <div
+          class="menu-card {% if not item.is_available %}menu-card--unavailable{% endif %}"
+          data-category="{{ item.category.id }}"
+        >
+          {# Бейдж категории #}
+          <span class="menu-card__badge">{{ item.category.name }}</span>
+
+          {# Название блюда #}
+          <h2 class="menu-card__title">{{ item.name }}</h2>
+
+          {# Описание (если есть) #}
+          {% if item.description %}
+            <p class="menu-card__description">{{ item.description }}</p>
+          {% endif %}
+
+          {# Цена #}
+          <p class="menu-card__price">{{ item.price }} ₽</p>
+
+          {# Кнопка — зависит от наличия #}
+          {% if item.is_available %}
+            <button class="btn btn--primary">В корзину</button>
+          {% else %}
+            <button class="btn btn--disabled" disabled>Нет в наличии</button>
+          {% endif %}
+
+        </div>
+      {% endfor %}
+
+    {% else %}
+      {# Пустое состояние: нет позиций в меню #}
+      <p class="empty-state">
+        Позиций меню пока нет.
+        <a href="/admin/">Добавить через панель администратора</a>
+      </p>
+    {% endif %}
+
+  </div>
+
+{% endblock %}

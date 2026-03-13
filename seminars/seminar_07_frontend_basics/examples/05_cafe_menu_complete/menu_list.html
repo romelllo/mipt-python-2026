@@ -1,0 +1,123 @@
+{# ============================================================ #}
+{# Семинар 7: Полный шаблон меню кафе (05_cafe_menu_complete) #}
+{#                                                              #}
+{# Этот файл — финальная версия menu_list.html с:             #}
+{#   - HTML-структурой страницы                               #}
+{#   - Django-тегами: {% for %}, {% if %}, {% url %}, {% static %} #}
+{#   - CSS-классами для стилизации (см. static/cafe/css/style.css) #}
+{#   - data-* атрибутами для JS-фильтрации (см. static/cafe/js/menu.js) #}
+{#                                                              #}
+{# Расположение в реальном проекте:                            #}
+{#   cafe/templates/cafe/menu_list.html                        #}
+{# ============================================================ #}
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Меню — Кафе «Питоновая кружка»{% endblock %}
+
+{% block content %}
+
+  {# Заголовок страницы #}
+  <section class="menu-header">
+    <h1 class="page-title">Наше меню</h1>
+    <p class="page-subtitle">
+      {{ menu_items|length }} позиций в меню
+      {% if selected_category %}
+        в выбранной категории
+      {% endif %}
+    </p>
+  </section>
+
+  {# ============================================================
+     Поиск и фильтр по категориям
+  ============================================================ #}
+  <div class="menu-controls">
+
+    {# Поле поиска — JS будет фильтровать карточки при вводе #}
+    <input
+      type="text"
+      id="menu-search"
+      class="search-input"
+      placeholder="🔍 Поиск по названию..."
+      autocomplete="off"
+    />
+
+    {# Кнопки категорий #}
+    <div class="category-filter" id="category-filter">
+      <button class="filter-btn filter-btn--active" data-category="all">
+        Все
+      </button>
+      {% for category in categories %}
+        <button class="filter-btn" data-category="{{ category.id }}">
+          {{ category.name }}
+        </button>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  {# ============================================================
+     Счётчик результатов (обновляется JavaScript-ом)
+  ============================================================ #}
+  <p class="results-count" id="results-count">
+    Показано: <span id="visible-count">{{ menu_items|length }}</span>
+  </p>
+
+  {# ============================================================
+     Сетка карточек меню
+  ============================================================ #}
+  <div class="menu-grid" id="menu-grid">
+
+    {% if menu_items %}
+      {% for item in menu_items %}
+
+        <div
+          class="menu-card {% if not item.is_available %}menu-card--unavailable{% endif %}"
+          data-category="{{ item.category.id }}"
+          data-name="{{ item.name|lower }}"
+        >
+          <span class="menu-card__badge">{{ item.category.name }}</span>
+
+          <h2 class="menu-card__title">{{ item.name }}</h2>
+
+          {% if item.description %}
+            <p class="menu-card__description">{{ item.description }}</p>
+          {% else %}
+            <p class="menu-card__description menu-card__description--empty">
+              Описание отсутствует
+            </p>
+          {% endif %}
+
+          <p class="menu-card__price">{{ item.price }} ₽</p>
+
+          <div class="menu-card__footer">
+            {% if item.is_available %}
+              <span class="availability available">✓ В наличии</span>
+              <button class="btn btn--primary">В корзину</button>
+            {% else %}
+              <span class="availability unavailable">✗ Нет в наличии</span>
+              <button class="btn btn--disabled" disabled>Недоступно</button>
+            {% endif %}
+          </div>
+
+        </div>
+
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <p>😔 Меню пока пустое.</p>
+        <a href="/admin/cafe/menuitem/add/" class="btn btn--primary">
+          Добавить блюдо
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+
+  {# Сообщение при отсутствии результатов поиска (показывается JS-ом) #}
+  <p class="no-results" id="no-results" style="display: none;">
+    🔍 Ничего не найдено. Попробуйте другой запрос.
+  </p>
+
+{% endblock %}

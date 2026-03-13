@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!--
+  Семинар 7: CSS — стилизация страницы
+  Этот файл демонстрирует два способа подключения CSS:
+    1. Встроенный блок <style> прямо в HTML
+    2. Внешний файл styles.css (через <link>)
+
+  Откройте этот файл в браузере — он загрузит 02_styles.css автоматически.
+-->
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS — Карточки меню</title>
+
+  <!-- ============================================================
+       Способ 1: Внешний CSS-файл через <link>
+       rel="stylesheet" — тип отношения (это таблица стилей)
+       href — путь к файлу CSS
+  ============================================================ -->
+  <link rel="stylesheet" href="02_styles.css" />
+
+  <!-- ============================================================
+       Способ 2: Встроенный блок <style> прямо в HTML
+       Хорош для небольших стилей, специфичных для этой страницы.
+       Для больших проектов лучше использовать внешний файл.
+  ============================================================ -->
+  <style>
+    /* Заголовок страницы — стиль только для этой страницы */
+    .page-title {
+      font-size: 2rem;
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      text-align: center;
+      color: #7f8c8d;
+      margin-bottom: 32px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1 class="page-title">Меню кафе «Питоновая кружка»</h1>
+  <p class="page-subtitle">Свежий кофе и вкусная выпечка каждый день</p>
+
+  <!-- ============================================================
+       Контейнер для карточек
+       CSS-класс "menu-grid" определён в 02_styles.css
+  ============================================================ -->
+  <div class="menu-grid">
+
+    <!-- Карточка позиции меню — класс "menu-card" из 02_styles.css -->
+    <div class="menu-card">
+      <!-- Класс "menu-card__badge" — маленький бейдж категории -->
+      <span class="menu-card__badge">Напитки</span>
+      <h2 class="menu-card__title">Капучино</h2>
+      <p class="menu-card__description">
+        Нежный кофе с молочной пенкой и корицей.
+        Готовится из свежеобжаренных зёрен арабики.
+      </p>
+      <!-- Класс "menu-card__price" — выделенная цена -->
+      <p class="menu-card__price">250 ₽</p>
+      <!-- Кнопка — класс "btn btn--primary" из 02_styles.css -->
+      <button class="btn btn--primary">В корзину</button>
+    </div>
+
+    <div class="menu-card">
+      <span class="menu-card__badge">Напитки</span>
+      <h2 class="menu-card__title">Латте</h2>
+      <p class="menu-card__description">
+        Мягкий кофейный напиток с большим количеством вспененного молока.
+      </p>
+      <p class="menu-card__price">280 ₽</p>
+      <button class="btn btn--primary">В корзину</button>
+    </div>
+
+    <!-- Карточка недоступного блюда — дополнительный класс "menu-card--unavailable" -->
+    <div class="menu-card menu-card--unavailable">
+      <span class="menu-card__badge">Выпечка</span>
+      <h2 class="menu-card__title">Круассан</h2>
+      <p class="menu-card__description">
+        Хрустящий французский круассан с маслом. Выпекается каждое утро.
+      </p>
+      <p class="menu-card__price">150 ₽</p>
+      <!-- Класс "btn btn--disabled" — неактивная кнопка -->
+      <button class="btn btn--disabled" disabled>Нет в наличии</button>
+    </div>
+
+    <div class="menu-card">
+      <span class="menu-card__badge">Выпечка</span>
+      <h2 class="menu-card__title">Тирамису</h2>
+      <p class="menu-card__description">
+        Классический итальянский десерт с маскарпоне и кофе.
+      </p>
+      <!-- Цена со скидкой: перечёркнутая старая цена + новая -->
+      <p class="menu-card__price">
+        <span class="price--old">500 ₽</span>
+        <span class="price--sale">400 ₽</span>
+      </p>
+      <button class="btn btn--primary">В корзину</button>
+    </div>
+
+  </div>
+
+</body>
+</html>

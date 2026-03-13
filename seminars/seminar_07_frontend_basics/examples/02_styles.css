@@ -1,0 +1,146 @@
+/*
+  Семинар 7: Внешний CSS-файл для 02_css_styling.html
+  Демонстрирует: селекторы, цвета, отступы, Flexbox, псевдоклассы
+*/
+
+/* ============================================================
+   Глобальные стили (применяются ко всему документу)
+============================================================ */
+
+/* Сброс браузерных стилей по умолчанию */
+* {
+  box-sizing: border-box;  /* Отступы включаются в ширину блока */
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;  /* Шрифт для всей страницы */
+  background-color: #f0f2f5;
+  color: #2c3e50;                               /* Основной цвет текста */
+  padding: 24px;                                /* Внутренний отступ от краёв */
+  line-height: 1.5;                             /* Межстрочный интервал */
+}
+
+/* ============================================================
+   Сетка карточек — Flexbox
+   display: flex — включить Flexbox-контейнер
+   flex-wrap: wrap — переносить на новую строку при нехватке места
+   gap: 20px — расстояние между карточками
+============================================================ */
+.menu-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;    /* Центрировать карточки по горизонтали */
+  max-width: 960px;
+  margin: 0 auto;             /* Центрировать контейнер */
+}
+
+/* ============================================================
+   Карточка меню
+   Селектор класса: .menu-card
+============================================================ */
+.menu-card {
+  background-color: #ffffff;
+  border-radius: 12px;        /* Скруглённые углы */
+  padding: 20px;              /* Внутренний отступ */
+  width: 220px;               /* Фиксированная ширина */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);  /* Тень */
+  transition: transform 0.2s ease;            /* Плавный эффект при hover */
+}
+
+/* Псевдокласс :hover — стиль при наведении курсора */
+.menu-card:hover {
+  transform: translateY(-4px);  /* Поднять карточку на 4px */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Модификатор: недоступное блюдо */
+.menu-card--unavailable {
+  opacity: 0.6;               /* Полупрозрачность */
+  background-color: #f8f8f8;
+}
+
+/* ============================================================
+   Элементы карточки
+============================================================ */
+
+/* Бейдж категории */
+.menu-card__badge {
+  display: inline-block;
+  background-color: #e8f4fd;
+  color: #2980b9;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 999px;       /* «Таблетка» — очень большой радиус */
+  margin-bottom: 10px;
+}
+
+/* Название блюда */
+.menu-card__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+/* Описание блюда */
+.menu-card__description {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+/* Цена */
+.menu-card__price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #e74c3c;
+  margin-bottom: 12px;
+}
+
+/* Перечёркнутая старая цена */
+.price--old {
+  text-decoration: line-through;
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-right: 6px;
+}
+
+/* Цена со скидкой */
+.price--sale {
+  color: #e74c3c;
+}
+
+/* ============================================================
+   Кнопки
+   Базовый класс .btn + модификаторы .btn--primary, .btn--disabled
+============================================================ */
+.btn {
+  display: block;             /* Растянуть на ширину карточки */
+  width: 100%;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;            /* Курсор-рука при наведении */
+  transition: background-color 0.2s ease;
+}
+
+.btn--primary {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background-color: #2980b9;
+}
+
+.btn--disabled {
+  background-color: #ddd;
+  color: #999;
+  cursor: not-allowed;        /* Запрещающий курсор */
+}

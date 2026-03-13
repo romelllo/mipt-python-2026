@@ -1,0 +1,69 @@
+{# ============================================================ #}
+{# Семинар 7: Базовый шаблон (base.html)                      #}
+{#                                                              #}
+{# Этот файл — «скелет» каждой страницы сайта.               #}
+{# Конкретные страницы (menu_list.html и др.) расширяют его   #}
+{# через {% extends "base.html" %} и заполняют блоки.        #}
+{#                                                              #}
+{# Расположение в проекте:                                      #}
+{#   cafe_project/templates/base.html                          #}
+{# ============================================================ #}
+
+{% load static %}
+{# ↑ Обязательно! Загружает тег {% static %} для ссылок на статику #}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  {# Блок title: дочерний шаблон может переопределить заголовок вкладки #}
+  <title>{% block title %}Кафе «Питоновая кружка»{% endblock %}</title>
+
+  {# Общие стили для всего сайта #}
+  <link rel="stylesheet" href="{% static 'cafe/css/style.css' %}" />
+
+  {# Блок extra_css: дочерний шаблон может добавить свои стили #}
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+  {# Шапка сайта — одинакова на всех страницах #}
+  <header class="site-header">
+    <div class="container">
+      <a href="{% url 'cafe:menu_list' %}" class="site-logo">
+        ☕ Питоновая кружка
+      </a>
+      <nav class="site-nav">
+        <a href="{% url 'cafe:menu_list' %}">Меню</a>
+        {# Здесь можно добавить другие ссылки: "О нас", "Контакты" #}
+      </nav>
+    </div>
+  </header>
+
+  {# Основной контент страницы — переопределяется в каждом шаблоне #}
+  <main class="main-content">
+    <div class="container">
+      {% block content %}
+        {# Здесь дочерний шаблон размещает своё содержимое #}
+      {% endblock %}
+    </div>
+  </main>
+
+  {# Подвал сайта #}
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2026 Кафе «Питоновая кружка»</p>
+    </div>
+  </footer>
+
+  {# Общий JS для всего сайта #}
+  <script src="{% static 'cafe/js/menu.js' %}"></script>
+
+  {# Блок extra_js: дочерний шаблон может добавить свои скрипты #}
+  {% block extra_js %}{% endblock %}
+
+</body>
+</html>

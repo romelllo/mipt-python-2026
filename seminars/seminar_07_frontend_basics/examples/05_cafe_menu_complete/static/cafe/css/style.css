@@ -1,0 +1,355 @@
+/*
+  Семинар 7: CSS для страницы меню кафе
+  Файл: static/cafe/css/style.css
+
+  В Django подключается через:
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'cafe/css/style.css' %}">
+
+  Структура:
+    1. Сброс и глобальные стили
+    2. Шапка и навигация
+    3. Основной контент
+    4. Элементы управления (поиск, фильтр)
+    5. Сетка и карточки меню
+    6. Кнопки
+    7. Подвал
+    8. Вспомогательные классы
+*/
+
+/* ============================================================
+   1. Сброс и глобальные стили
+============================================================ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* CSS-переменные: удобно менять цветовую схему в одном месте */
+  --color-primary: #3498db;
+  --color-primary-dark: #2980b9;
+  --color-danger: #e74c3c;
+  --color-success: #27ae60;
+  --color-text: #2c3e50;
+  --color-text-muted: #7f8c8d;
+  --color-bg: #f0f2f5;
+  --color-card: #ffffff;
+  --color-border: #e0e0e0;
+  --radius-card: 12px;
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.09);
+  --shadow-card-hover: 0 6px 20px rgba(0, 0, 0, 0.14);
+  --container-width: 1100px;
+}
+
+html {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Контейнер: ограничивает ширину и центрирует */
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ============================================================
+   2. Шапка и навигация
+============================================================ */
+.site-header {
+  background-color: var(--color-primary);
+  color: #fff;
+  padding: 14px 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-logo {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+}
+
+.site-nav a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  margin-left: 20px;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.site-nav a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* ============================================================
+   3. Основной контент
+============================================================ */
+.main-content {
+  flex: 1;                   /* Растягивается, чтобы footer был снизу */
+  padding: 32px 0 48px;
+}
+
+.menu-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.page-subtitle {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+/* ============================================================
+   4. Элементы управления: поиск и фильтр
+============================================================ */
+.menu-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  padding: 10px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;     /* Скруглённая «таблетка» */
+  font-size: 0.95rem;
+  outline: none;
+  width: 260px;
+  background: var(--color-card);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-btn {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 7px 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.filter-btn:hover {
+  background-color: #e8f4fd;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Активная кнопка фильтра */
+.filter-btn--active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.filter-btn--active:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.results-count {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 16px;
+}
+
+/* ============================================================
+   5. Сетка и карточки меню
+============================================================ */
+.menu-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.menu-card {
+  background-color: var(--color-card);
+  border-radius: var(--radius-card);
+  padding: 20px;
+  width: 230px;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;    /* Вертикальное расположение элементов */
+}
+
+.menu-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Модификатор: недоступное блюдо */
+.menu-card--unavailable {
+  opacity: 0.55;
+  filter: grayscale(30%);
+}
+
+.menu-card__badge {
+  display: inline-block;
+  background-color: #e8f4fd;
+  color: var(--color-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+
+.menu-card__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.menu-card__description {
+  font-size: 0.83rem;
+  color: #888;
+  margin-bottom: 14px;
+  flex: 1;                   /* Заполняет оставшееся место → footer прижат к низу */
+  line-height: 1.45;
+}
+
+.menu-card__description--empty {
+  font-style: italic;
+  color: #bbb;
+}
+
+.menu-card__price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-danger);
+  margin-bottom: 14px;
+}
+
+.menu-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Статус доступности */
+.availability {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.availability.available {
+  color: var(--color-success);
+}
+
+.availability.unavailable {
+  color: #bbb;
+}
+
+/* ============================================================
+   6. Кнопки
+============================================================ */
+.btn {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn--primary {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.btn--disabled {
+  background-color: #e0e0e0;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   7. Подвал
+============================================================ */
+.site-footer {
+  background-color: var(--color-text);
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 0.85rem;
+}
+
+/* ============================================================
+   8. Вспомогательные классы
+============================================================ */
+
+/* Пустое состояние */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--color-text-muted);
+  width: 100%;
+}
+
+.empty-state p {
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+}
+
+/* «Ничего не найдено» при поиске */
+.no-results {
+  text-align: center;
+  padding: 40px;
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+  width: 100%;
+}
