@@ -22,6 +22,41 @@ python manage.py startapp cafe
 #   seminars/seminar_07_frontend_basics/examples/03_javascript_basics.html
 ```
 
+### Проверка данных в БД
+
+Для заданий 4.1 и 5.1 нужны данные в БД. Проверьте их наличие в `manage.py shell`:
+
+```bash
+python manage.py shell
+```
+
+```python
+from cafe.models import Category, MenuItem
+print(Category.objects.count())   # Должно быть > 0
+print(MenuItem.objects.count())   # Должно быть > 0
+```
+
+Если данных нет — добавьте тестовые записи прямо в shell:
+
+```python
+from cafe.models import Category, MenuItem
+
+# Категории
+drinks = Category.objects.create(name="Напитки")
+pastry = Category.objects.create(name="Выпечка")
+breakfast = Category.objects.create(name="Завтраки")
+
+# Блюда
+MenuItem.objects.create(name="Капучино", category=drinks, price=250)
+MenuItem.objects.create(name="Латте", category=drinks, price=280)
+MenuItem.objects.create(name="Чай зелёный", category=drinks, price=150)
+MenuItem.objects.create(name="Круассан", category=pastry, price=180)
+MenuItem.objects.create(name="Чизкейк", category=pastry, price=350)
+MenuItem.objects.create(name="Тирамису", category=pastry, price=380, is_available=False)
+MenuItem.objects.create(name="Яичница с тостами", category=breakfast, price=320)
+MenuItem.objects.create(name="Овсянка с ягодами", category=breakfast, price=280)
+```
+
 > **Как работать с заданиями:** прочитайте условие, попробуйте решить самостоятельно, и только после этого раскройте решение для проверки.
 
 ---
@@ -127,7 +162,7 @@ python manage.py startapp cafe
 </style>
 ```
 
-Класс в CSS: `.price { color: #e74c3c; font-weight: bold; }`.  
+Класс в CSS: `.price { color: #e74c3c; font-weight: bold; }`.
 Применение в HTML: `<p class="price">450 ₽</p>`.
 
 `margin: 0 auto` центрирует блочный элемент с фиксированной шириной.
@@ -219,8 +254,8 @@ li {
 <details>
 <summary>Подсказка</summary>
 
-`document.getElementById("btn-hello")` — найти кнопку.  
-`.addEventListener("click", function() { ... })` — подписаться на клик.  
+`document.getElementById("btn-hello")` — найти кнопку.
+`.addEventListener("click", function() { ... })` — подписаться на клик.
 `.textContent = "..."` — изменить текст элемента.
 
 `defer` — скрипт выполняется после загрузки всего HTML, поэтому `document.getElementById(...)` найдёт элемент даже если `<script>` в `<head>`.
@@ -269,22 +304,25 @@ btnReset.addEventListener("click", function () {
 
 В Django-проекте кафе из семинара 6 создайте базовый шаблон и страницу меню:
 
-1. В `settings.py` добавьте `BASE_DIR / "templates"` в `TEMPLATES → DIRS`
-2. Создайте `templates/base.html` с полной HTML-структурой, блоками `{% block title %}` и `{% block content %}`
-3. В `cafe/views.py` создайте view `menu_list`, который передаёт в шаблон все объекты `MenuItem` через `select_related("category")`
-4. Создайте `cafe/templates/cafe/menu_list.html` c `{% extends "base.html" %}`, `{% for item in menu_items %}` и `{% if item.is_available %}`
-5. Подключите URL `/menu/` и запустите сервер: `python manage.py runserver`
+1. Убедитесь, что `'cafe'` есть в `INSTALLED_APPS` в `settings.py`
+2. В `settings.py` добавьте `BASE_DIR / "templates"` в `TEMPLATES → DIRS`
+3. Создайте `templates/base.html` с полной HTML-структурой, блоками `{% block title %}` и `{% block content %}`
+4. В `cafe/views.py` создайте view `menu_list`, который передаёт в шаблон все объекты `MenuItem` через `select_related("category")`
+5. Создайте `cafe/templates/cafe/menu_list.html` c `{% extends "base.html" %}`, `{% for item in menu_items %}` и `{% if item.is_available %}`
+6. Создайте `cafe/urls.py`, подключите его в `cafe_project/urls.py` и запустите сервер: `python manage.py runserver`
 
 <details>
 <summary>Подсказка</summary>
+
+Без `'cafe'` в `INSTALLED_APPS` Django не найдёт шаблоны в `cafe/templates/` (даже при `APP_DIRS: True`) и не будет применять миграции приложения.
 
 View минимальный:
 ```python
 return render(request, "cafe/menu_list.html", {"menu_items": MenuItem.objects.all().select_related("category")})
 ```
 
-Шаблон: создайте папку `cafe/templates/cafe/` (Django ищет шаблоны именно в `templates/<app>/`).  
-URL с параметром: `path("menu/", menu_list, name="menu_list")`.
+Шаблоны приложения: создайте папку `cafe/templates/cafe/` — Django ищет их именно по пути `templates/<app_name>/`.
+`cafe/urls.py` не создаётся автоматически командой `startapp` — его нужно создать вручную.
 
 </details>
 
@@ -293,6 +331,11 @@ URL с параметром: `path("menu/", menu_list, name="menu_list")`.
 
 `cafe_project/settings.py`:
 ```python
+INSTALLED_APPS = [
+    # ... стандартные приложения Django ...
+    "cafe",   # ← Добавили
+]
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -362,7 +405,7 @@ def menu_list(request):
 {% endblock %}
 ```
 
-`cafe/urls.py`:
+`cafe/urls.py` (создайте этот файл вручную):
 ```python
 from django.urls import path
 from cafe.views import menu_list
@@ -384,6 +427,8 @@ urlpatterns = [
 ]
 ```
 
+Откройте `http://localhost:8000/menu/` — должен отобразиться список блюд из БД.
+
 </details>
 
 ---
@@ -397,20 +442,23 @@ urlpatterns = [
 Улучшите страницу меню: добавьте CSS и JavaScript-фильтрацию по категориям.
 
 **CSS (статические файлы):**
-1. Создайте `cafe/static/cafe/css/style.css` с Flexbox-сеткой `.menu-grid` и карточками `.menu-card`
-2. Подключите CSS в `base.html` через `{% load static %}` и тег `{% static 'cafe/css/style.css' %}`
-3. Замените список `<ul>` в шаблоне на сетку карточек
+1. Убедитесь, что `'django.contrib.staticfiles'` есть в `INSTALLED_APPS` (присутствует по умолчанию) и `DEBUG = True` в `settings.py` — иначе dev-сервер не будет отдавать статику
+2. Создайте `cafe/static/cafe/css/style.css` с Flexbox-сеткой `.menu-grid` и карточками `.menu-card`
+3. Подключите CSS в `base.html` через `{% load static %}` и тег `{% static 'cafe/css/style.css' %}`
+4. Замените список `<ul>` в шаблоне на сетку карточек
 
 **JavaScript (фильтрация):**
-4. В view добавьте в контекст `"categories": Category.objects.all()`
-5. В шаблоне добавьте кнопки-фильтры `<button data-category="{{ category.id }}">` и атрибут `data-category="{{ item.category.id }}"` на каждой карточке
-6. Создайте `cafe/static/cafe/js/menu.js` — по клику на кнопку скрывать/показывать карточки нужной категории
-7. Подключите JS через `{% static 'cafe/js/menu.js' %}` перед `</body>`
+5. В view добавьте в контекст `"categories": Category.objects.all()`
+6. В шаблоне добавьте кнопки-фильтры `<button data-category="{{ category.id }}">` и атрибут `data-category="{{ item.category.id }}"` на каждой карточке
+7. Создайте `cafe/static/cafe/js/menu.js` — по клику на кнопку скрывать/показывать карточки нужной категории
+8. Подключите JS через `{% static 'cafe/js/menu.js' %}` перед `</body>`
 
 <details>
 <summary>Подсказка</summary>
 
 Структура статики: `<app>/static/<app>/css/style.css` — двойное имя приложения намеренно, чтобы избежать коллизий при `collectstatic`.
+
+`{% load static %}` нужно добавить в начало каждого шаблона, где используется тег `{% static %}`. В `base.html` — один раз в самом начале файла, до `<!DOCTYPE html>`.
 
 В JS: `document.querySelectorAll(".filter-btn")` — все кнопки. При клике: `btn.dataset.category` — значение `data-category`. Карточки скрывать через `card.style.display = "none"`, показывать через `card.style.display = ""`.
 
@@ -418,6 +466,19 @@ urlpatterns = [
 
 <details>
 <summary>Решение</summary>
+
+`cafe_project/settings.py` — проверьте, что есть (по умолчанию присутствует):
+```python
+DEBUG = True
+
+INSTALLED_APPS = [
+    "django.contrib.staticfiles",  # ← нужен для {% static %}
+    # ...
+    "cafe",
+]
+
+STATIC_URL = "static/"
+```
 
 `cafe/static/cafe/css/style.css`:
 ```css
@@ -500,28 +561,28 @@ header a { color: #fff; text-decoration: none; }
 
 `cafe/static/cafe/js/menu.js`:
 ```javascript
-document.addEventListener("DOMContentLoaded", function () {
-  const filterBtns = document.querySelectorAll(".filter-btn");
-  const cards = document.querySelectorAll(".menu-card");
+// Скрипт подключён в конце <body>, поэтому DOM уже загружен —
+// DOMContentLoaded не нужен, обращаемся к элементам напрямую.
+const filterBtns = document.querySelectorAll(".filter-btn");
+const cards = document.querySelectorAll(".menu-card");
 
-  filterBtns.forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      // Активная кнопка
-      filterBtns.forEach(function (b) {
-        b.classList.remove("filter-btn--active");
-      });
-      btn.classList.add("filter-btn--active");
+filterBtns.forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    // Активная кнопка
+    filterBtns.forEach(function (b) {
+      b.classList.remove("filter-btn--active");
+    });
+    btn.classList.add("filter-btn--active");
 
-      const selected = btn.dataset.category;
+    const selected = btn.dataset.category;
 
-      // Показать/скрыть карточки
-      cards.forEach(function (card) {
-        if (selected === "all" || card.dataset.category === selected) {
-          card.style.display = "";
-        } else {
-          card.style.display = "none";
-        }
-      });
+    // Показать/скрыть карточки
+    cards.forEach(function (card) {
+      if (selected === "all" || card.dataset.category === selected) {
+        card.style.display = "";
+      } else {
+        card.style.display = "none";
+      }
     });
   });
 });
@@ -568,7 +629,6 @@ def menu_list(request):
 `cafe/templates/cafe/menu_list.html` (обновлённый):
 ```html
 {% extends "base.html" %}
-{% load static %}
 
 {% block title %}Меню{% endblock %}
 
@@ -650,39 +710,38 @@ def menu_list(request):
 
 `cafe/static/cafe/js/menu.js` (расширенная версия):
 ```javascript
-document.addEventListener("DOMContentLoaded", function () {
-  const filterBtns = document.querySelectorAll(".filter-btn");
-  const cards = document.querySelectorAll(".menu-card");
-  const searchInput = document.getElementById("menu-search");
+// Скрипт подключён в конце <body> — DOM уже загружен.
+const filterBtns = document.querySelectorAll(".filter-btn");
+const cards = document.querySelectorAll(".menu-card");
+const searchInput = document.getElementById("menu-search");
 
-  let activeCategory = "all";
-  let searchQuery = "";
+let activeCategory = "all";
+let searchQuery = "";
 
-  function applyFilters() {
-    cards.forEach(function (card) {
-      const categoryMatch =
-        activeCategory === "all" || card.dataset.category === activeCategory;
-      const nameMatch = card.dataset.name.includes(searchQuery);
-      card.style.display = categoryMatch && nameMatch ? "" : "none";
-    });
-  }
-
-  filterBtns.forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      filterBtns.forEach(function (b) { b.classList.remove("filter-btn--active"); });
-      btn.classList.add("filter-btn--active");
-      activeCategory = btn.dataset.category;
-      applyFilters();
-    });
+function applyFilters() {
+  cards.forEach(function (card) {
+    const categoryMatch =
+      activeCategory === "all" || card.dataset.category === activeCategory;
+    const nameMatch = card.dataset.name.includes(searchQuery);
+    card.style.display = categoryMatch && nameMatch ? "" : "none";
   });
+}
 
-  if (searchInput) {
-    searchInput.addEventListener("input", function () {
-      searchQuery = searchInput.value.toLowerCase().trim();
-      applyFilters();
-    });
-  }
+filterBtns.forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    filterBtns.forEach(function (b) { b.classList.remove("filter-btn--active"); });
+    btn.classList.add("filter-btn--active");
+    activeCategory = btn.dataset.category;
+    applyFilters();
+  });
 });
+
+if (searchInput) {
+  searchInput.addEventListener("input", function () {
+    searchQuery = searchInput.value.toLowerCase().trim();
+    applyFilters();
+  });
+}
 ```
 
 </details>
