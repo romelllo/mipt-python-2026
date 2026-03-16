@@ -511,4 +511,4 @@ seminar_07_frontend_basics/
 - [MDN Flexbox Guide](https://developer.mozilla.org/ru/docs/Learn/CSS/CSS_layout/Flexbox) — пошаговое руководство по Flexbox с примерами
 - [Django Templates](https://docs.djangoproject.com/en/5.0/topics/templates/) — официальная документация: теги, фильтры, наследование
 - [Django Static Files](https://docs.djangoproject.com/en/5.0/howto/static-files/) — как настроить и использовать статику в Django
-- [JavaScript.info](https://javascript.info/ru) — лучший учебник по JavaScript на русском (от основ до продвинутых тем)
+- [JavaScript.info](https://learn.javascript.ru/) — лучший учебник по JavaScript на русском (от основ до продвинутых тем)
