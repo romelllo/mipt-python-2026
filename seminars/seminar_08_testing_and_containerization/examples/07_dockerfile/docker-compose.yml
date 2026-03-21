@@ -1,0 +1,95 @@
+# ============================================================
+# docker-compose.yml для Django-приложения кафе
+# ============================================================
+# Запуск: docker compose up --build
+# Остановка: docker compose down
+# Логи: docker compose logs -f web
+
+services:
+  # ============================================================
+  # Сервис web — Django + gunicorn
+  # ============================================================
+  web:
+    # Собираем образ из Dockerfile в текущей директории
+    # В реальном cafe_project замените . на путь к проекту
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # Проброс портов: хост:контейнер
+    # http://localhost:8000 → контейнер:8000
+    ports:
+      - "8000:8000"
+
+    # ============================================================
+    # Переменные окружения
+    # ============================================================
+    # НИКОГДА не храните реальные секреты в docker-compose.yml!
+    # Используйте .env файл (добавьте в .gitignore) или
+    # систему управления секретами (Vault, AWS Secrets Manager).
+    environment:
+      - SECRET_KEY=django-insecure-dev-key-replace-in-production-12345
+      - DEBUG=0
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+      - DJANGO_SETTINGS_MODULE=cafe_project.settings
+      # Путь к SQLite БД внутри контейнера
+      - DATABASE_PATH=/app/data/db.sqlite3
+
+    # ============================================================
+    # Volumes — постоянное хранилище
+    # ============================================================
+    # Без volume: данные SQLite потеряются при перезапуске контейнера!
+    # С volume: /app/data монтируется в именованный volume cafe_db_data
+    volumes:
+      - cafe_db_data:/app/data
+
+    # ============================================================
+    # Команда запуска
+    # ============================================================
+    # Переопределяем CMD из Dockerfile:
+    # 1. Применяем миграции (создаём/обновляем БД)
+    # 2. Запускаем gunicorn
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             gunicorn cafe_project.wsgi:application
+             --bind 0.0.0.0:8000
+             --workers 2
+             --timeout 60"
+
+    # ============================================================
+    # Health check
+    # ============================================================
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/menu/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+    # Перезапускать контейнер при сбоях (кроме ручной остановки)
+    restart: unless-stopped
+
+# ============================================================
+# Именованные volumes
+# ============================================================
+# Docker управляет этим volume. Данные сохраняются между
+# перезапусками контейнера.
+#
+# Просмотр: docker volume ls
+# Удаление: docker volume rm seminar_08_cafe_db_data
+volumes:
+  cafe_db_data:
+    name: seminar_08_cafe_db_data
+
+# ============================================================
+# Примеры команд для работы с compose
+# ============================================================
+# docker compose up --build        — собрать образ и запустить
+# docker compose up -d             — запустить в фоне (detach)
+# docker compose logs -f web       — смотреть логи
+# docker compose exec web bash     — войти в контейнер
+# docker compose exec web python manage.py shell   — Django shell
+# docker compose exec web python manage.py createsuperuser
+# docker compose down              — остановить и удалить контейнеры
+# docker compose down -v           — + удалить volumes (ДАННЫЕ УДАЛЯТСЯ!)

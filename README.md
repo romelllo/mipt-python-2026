@@ -24,7 +24,7 @@
 | 5 | [Python и WEB-фреймворки](./seminars/seminar_05_python_web_frameworks/) | Django, Flask, FastAPI |
 | 6 | [Взаимодействие с базами данных с помощью Django](./seminars/seminar_06_django_db_integration/) | Django ORM, миграции |
 | 7 | [Основы Frontend-разработки](./seminars/seminar_07_frontend_basics/) | HTML, CSS, JavaScript |
-| 8 | [Продвинутые возможности Django](./seminars/seminar_08_advanced_django/) | DRF, CBV, аутентификация |
+| 8 | [Тестирование и контейнеризация](./seminars/seminar_08_testing_and_containerization/) | pytest, Docker |
 | 9 | [Введение в FastAPI и REST-сервисы](./seminars/seminar_09_fastapi_rest/) | Async, Pydantic, OpenAPI |
 | 10 | [Работа с данными в FastAPI](./seminars/seminar_10_fastapi_data_handling/) | SQLAlchemy, Alembic |
 | 11 | [Безопасность и тестирование приложений на FastAPI](./seminars/seminar_11_fastapi_security_testing/) | JWT, pytest |
