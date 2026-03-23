@@ -7,12 +7,12 @@
 source .venv/bin/activate  # Linux/Mac
 
 # Запустите примеры для ознакомления перед выполнением заданий
-python seminars/seminar_08_advanced_django/examples/01_test_types.py
-python seminars/seminar_08_advanced_django/examples/05_mocking.py
+python seminars/seminar_08_testing_and_containerization/examples/01_test_types.py
+python seminars/seminar_08_testing_and_containerization/examples/05_mocking.py
 
 # Запустите pytest-тесты из примеров
-pytest seminars/seminar_08_advanced_django/examples/02_pytest_basics.py -v
-pytest seminars/seminar_08_advanced_django/examples/03_pytest_fixtures.py -v
+pytest seminars/seminar_08_testing_and_containerization/examples/02_pytest_basics.py -v
+pytest seminars/seminar_08_testing_and_containerization/examples/03_pytest_fixtures.py -v
 ```
 
 > **Как работать с заданиями:** прочитайте условие, попробуйте ответить самостоятельно, и только после этого раскройте решение для проверки.
@@ -216,7 +216,7 @@ def test_apply_discount_returns_decimal() -> None:
 Запустите тесты из `examples/02_pytest_basics.py` через pytest и изучите вывод:
 
 ```bash
-pytest seminars/seminar_08_advanced_django/examples/02_pytest_basics.py -v
+pytest seminars/seminar_08_testing_and_containerization/examples/02_pytest_basics.py -v
 ```
 
 Затем намеренно «сломайте» один тест: измените ожидаемое значение в `test_single_item` на `Decimal("999.00")` и снова запустите. Изучите, как pytest объясняет ошибку. После — верните правильное значение.

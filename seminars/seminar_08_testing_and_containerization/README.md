@@ -28,13 +28,13 @@ source .venv/bin/activate  # Linux/Mac
 pytest --version
 
 # Запустите примеры для ознакомления
-python seminars/seminar_08_advanced_django/examples/01_test_types.py
-python seminars/seminar_08_advanced_django/examples/02_pytest_basics.py
-python seminars/seminar_08_advanced_django/examples/05_mocking.py
+python seminars/seminar_08_testing_and_containerization/examples/01_test_types.py
+python seminars/seminar_08_testing_and_containerization/examples/02_pytest_basics.py
+python seminars/seminar_08_testing_and_containerization/examples/05_mocking.py
 
 # Запустите тесты из примеров через pytest
-pytest seminars/seminar_08_advanced_django/examples/02_pytest_basics.py -v
-pytest seminars/seminar_08_advanced_django/examples/03_pytest_fixtures.py -v
+pytest seminars/seminar_08_testing_and_containerization/examples/02_pytest_basics.py -v
+pytest seminars/seminar_08_testing_and_containerization/examples/03_pytest_fixtures.py -v
 
 # Для Docker-части (опционально): установите Docker Desktop
 # https://docs.docker.com/get-docker/
@@ -507,7 +507,7 @@ docker compose down
 ## Файлы семинара
 
 ```
-seminar_08_advanced_django/
+seminar_08_testing_and_containerization/
 ├── README.md                              # Этот файл
 ├── examples/
 │   ├── 01_test_types.py                   # Виды тестов: unit, component, integration, E2E
