@@ -1,7 +1,7 @@
-# Семинар 9: Введение в FastAPI
+# Семинар 9: Введение в FastAPI  
 
-**Модуль:** 3 — Создание Web-сервисов на Python
-**Дата:** 30.03.2026
+**Модуль:** 3 — Создание Web-сервисов на Python  
+**Дата:** 30.03.2026  
 **Презентация:** [ссылка](https://docs.google.com/presentation/d/1BWHiVhAJsG8uyufTNJYQF4bxIDjEgYiwCekrFPMvyD0/edit?usp=sharing)
 
 ---
