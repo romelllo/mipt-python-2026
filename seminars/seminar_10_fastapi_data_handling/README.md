@@ -266,7 +266,7 @@ async def list_notes(session: SessionDep) -> list[Note]:
 
 ### Практика
 
-Перейдите к файлу [`exercises/exercises.md`](exercises/exercises.md) и выполните **Часть 2: `db.py` — асинхронная сессия** (задания 2.1–2.3).
+Перейдите к файлу [`exercises/exercises.md`](exercises/exercises.md) и выполните **Часть 2: `db.py` — асинхронная сессия** (задания 2.1–2.2).
 
 ---
 
@@ -362,7 +362,7 @@ async def get_enriched_note(note_id: int, session: SessionDep) -> dict:
 
 ### Практика
 
-Перейдите к файлу [`exercises/exercises.md`](exercises/exercises.md) и выполните **Часть 3: Async CRUD + внешние сервисы** (задания 3.1–3.3).
+Перейдите к файлу [`exercises/exercises.md`](exercises/exercises.md) и выполните **Часть 3: Async CRUD + внешние сервисы** (задание 3.1).
 
 ---
 
@@ -470,7 +470,7 @@ def downgrade() -> None:
 
 ### Практика
 
-Перейдите к файлу [`exercises/exercises.md`](exercises/exercises.md) и выполните **Часть 4: Миграции с Alembic** (задания 4.1–4.3).
+Перейдите к файлу [`exercises/exercises.md`](exercises/exercises.md) и выполните **Часть 4: Миграции с Alembic** (задания 4.1–4.2).
 
 ---
 
