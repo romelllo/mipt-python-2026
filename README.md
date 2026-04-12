@@ -27,7 +27,7 @@
 | 8 | [Тестирование и контейнеризация](./seminars/seminar_08_testing_and_containerization/) | pytest, Docker |
 | 9 | [Введение в FastAPI и REST-сервисы](./seminars/seminar_09_fastapi_intro/) | FastAPI, Pydantic, OpenAPI |
 | 10 | [Работа с данными в FastAPI](./seminars/seminar_10_fastapi_data_handling/) | SQLAlchemy, Alembic |
-| 11 | [Безопасность и тестирование приложений на FastAPI](./seminars/seminar_11_fastapi_security_testing/) | JWT, pytest |
+| 11 | [Безопасность и тестирование приложений на FastAPI](./seminars/seminar_11_fastapi_security_testing/) | JWT, pytest, TestClient |
 | 12 | [Контейнеризация FastAPI-приложения](./seminars/seminar_12_fastapi_containerization/) | Docker, Docker Compose |
 
 ### Модуль 4: Анализ данных на Python
