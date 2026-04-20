@@ -1,0 +1,133 @@
+# ============================================================
+# docker-compose.yml для FastAPI + PostgreSQL
+# ============================================================
+# Запуск:  docker compose up --build
+# Остановка: docker compose down
+# Логи:    docker compose logs -f web
+#
+# Отличия от Django compose (семинар 08):
+#   - Нет manage.py migrate → используем alembic upgrade head
+#   - Добавлен healthcheck для db → web ждёт готовности PostgreSQL
+#   - Используется env_file: .env вместо inline environment
+#   - Добавлена явная сеть (network) для изоляции сервисов
+
+services:
+  # ============================================================
+  # Сервис db — PostgreSQL 15
+  # ============================================================
+  db:
+    image: postgres:15-alpine
+    # alpine — ещё более лёгкий вариант образа (~50 МБ vs ~400 МБ)
+
+    # Переменные окружения PostgreSQL — читаются из .env файла
+    # НИКОГДА не хардкодьте пароли прямо здесь!
+    env_file:
+      - .env
+
+    # Именованный volume для данных БД.
+    # Без volume данные теряются при docker compose down!
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    # Healthcheck: проверяем, что PostgreSQL принимает соединения.
+    # pg_isready — утилита из пакета postgresql-client.
+    # -U ${POSTGRES_USER} — пользователь из .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+    # Подключаем к изолированной сети
+    networks:
+      - app_network
+
+    restart: unless-stopped
+
+  # ============================================================
+  # Сервис web — FastAPI + uvicorn
+  # ============================================================
+  web:
+    # Собираем образ из Dockerfile в текущей директории
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # Проброс портов: хост:контейнер
+    ports:
+      - "8000:8000"
+
+    # Переменные окружения из .env файла
+    # DATABASE_URL использует имя сервиса 'db' как хост —
+    # Docker DNS разрешает 'db' в IP контейнера PostgreSQL.
+    env_file:
+      - .env
+
+    # ============================================================
+    # Переопределение команды запуска
+    # ============================================================
+    # Вместо CMD из Dockerfile запускаем два шага:
+    # 1. alembic upgrade head — применяем все pending миграции
+    # 2. uvicorn app.main:app — запускаем сервер
+    #
+    # Почему здесь, а не в Dockerfile?
+    # - Dockerfile описывает образ (что установлено)
+    # - docker-compose описывает запуск (как запустить)
+    # - Миграции нужны только при запуске с реальной БД,
+    #   не при сборке образа (БД ещё нет во время build)
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2"
+
+    # ============================================================
+    # Зависимость от db с ожиданием healthcheck
+    # ============================================================
+    # depends_on с condition: service_healthy — web запустится
+    # ТОЛЬКО после того, как db пройдёт healthcheck.
+    # Без этого alembic upgrade head упадёт, если PostgreSQL
+    # ещё не готов принимать соединения.
+    depends_on:
+      db:
+        condition: service_healthy
+
+    # Подключаем к той же сети, что и db
+    networks:
+      - app_network
+
+    restart: unless-stopped
+
+# ============================================================
+# Именованные volumes
+# ============================================================
+# Docker управляет этим volume. Данные сохраняются между
+# перезапусками контейнеров.
+#
+# Просмотр: docker volume ls
+# Удаление: docker volume rm seminar_12_postgres_data
+volumes:
+  postgres_data:
+    name: seminar_12_postgres_data
+
+# ============================================================
+# Сеть
+# ============================================================
+# Изолированная bridge-сеть для сервисов.
+# Контейнеры в одной сети видят друг друга по имени сервиса.
+# Снаружи сети доступен только web (через проброс порта 8000).
+networks:
+  app_network:
+    driver: bridge
+
+# ============================================================
+# Полезные команды
+# ============================================================
+# docker compose up --build          — собрать и запустить
+# docker compose up -d               — запустить в фоне
+# docker compose logs -f web         — логи web-сервиса
+# docker compose exec web bash       — войти в контейнер
+# docker compose exec web alembic current   — текущая ревизия
+# docker compose exec web alembic history   — история миграций
+# docker compose exec db psql -U taskuser tasks_db  — psql
+# docker compose down                — остановить контейнеры
+# docker compose down -v             — + удалить volumes (ДАННЫЕ!)
