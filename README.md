@@ -34,7 +34,7 @@
 
 | # | Семинар | Описание |
 |---|---------|----------|
-| 13 | [Введение в анализ данных](./seminars/seminar_13_data_analysis_basics/) | NumPy, Pandas, Jupyter |
+| 13 | [Введение в анализ данных](./seminars/seminar_13_data_analysis_basics/) | NumPy, Pandas |
 | 14 | [Сбор данных со сторонних сайтов](./seminars/seminar_14_external_data_collection/) | requests, aiohttp |
 | 15 | [Beautiful Soup и работа с API](./seminars/seminar_15_beautifulsoup_apis/) | Парсинг HTML, работа с API |
 | 16 | [Описательные статистики. Статистика вывода](./seminars/seminar_16_statistics/) | Описательная и инференциальная статистика |
