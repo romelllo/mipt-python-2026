@@ -36,6 +36,8 @@ dependencies = [
     "bcrypt==4.0.1",
     "python-multipart>=0.0.24",
     "lxml>=6.1.0",
+    "scipy>=1.15.3",
+    "statsmodels>=0.14.6",
 ]
 
 [project.optional-dependencies]

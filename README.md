@@ -37,7 +37,7 @@
 | 13 | [Введение в анализ данных](./seminars/seminar_13_data_analysis_basics/) | NumPy, Pandas |
 | 14 | [Сбор данных со сторонних сайтов](./seminars/seminar_14_external_data_collection/) | requests, re |
 | 15 | [Beautiful Soup и работа с API](./seminars/seminar_15_beautifulsoup_apis/) | bs4, requests |
-| 16 | [Описательные статистики. Статистика вывода](./seminars/seminar_16_statistics/) | Описательная и инференциальная статистика |
+| 16 | [Описательные статистики. Статистика вывода](./seminars/seminar_16_statistics/) | Описательная статистика, pandas |
 | 17 | [Методы визуализации](./seminars/seminar_17_data_visualization/) | Matplotlib, Seaborn, Plotly |
 
 ## Требования
