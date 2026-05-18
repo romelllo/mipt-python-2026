@@ -141,11 +141,11 @@ def demo_describe(df: pd.DataFrame) -> None:
     # agg — несколько статистик сразу
     print("\nНесколько статистик через .agg():")
     result = df.groupby("species")["sepal_length"].agg(
-        среднее="mean",
-        медиана="median",
-        стд="std",
-        мин="min",
-        макс="max",
+        mean="mean",
+        median="median",
+        std="std",
+        min="min",
+        max="max",
     )
     print(result.round(3))
 

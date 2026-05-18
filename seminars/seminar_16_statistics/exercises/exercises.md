@@ -140,11 +140,11 @@ import pandas as pd
 df = pd.read_csv("seminars/seminar_16_statistics/data/iris.csv")
 
 result = df.groupby("species")["petal_length"].agg(
-    среднее="mean",
-    медиана="median",
-    стд="std",
-    минимум="min",
-    максимум="max",
+    mean="mean",
+    median="median",
+    std="std",
+    min="min",
+    max="max",
 )
 print(result.round(3))
 ```
